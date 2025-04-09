@@ -10,3 +10,57 @@
 #   universal: false
 
 -e file:.
+beautifulsoup4==4.13.3
+    # via bs4
+blinker==1.9.0
+    # via flask
+bs4==0.0.2
+    # via muq
+certifi==2025.1.31
+    # via requests
+charset-normalizer==3.4.1
+    # via niquests
+    # via requests
+click==8.1.8
+    # via flask
+dotenv==0.9.9
+    # via muq
+flask==3.1.0
+    # via muq
+h11==0.14.0
+    # via urllib3-future
+idna==3.10
+    # via requests
+itsdangerous==2.2.0
+    # via flask
+jh2==5.0.8
+    # via urllib3-future
+jinja2==3.1.6
+    # via flask
+lxml==5.3.2
+    # via muq
+markupsafe==3.0.2
+    # via jinja2
+    # via werkzeug
+niquests==3.14.0
+    # via pytailwindcss-extra
+pytailwindcss-extra==0.1.1
+    # via muq
+python-dotenv==1.1.0
+    # via dotenv
+qh3==1.4.3
+    # via urllib3-future
+requests==2.32.3
+    # via muq
+soupsieve==2.6
+    # via beautifulsoup4
+typing-extensions==4.13.1
+    # via beautifulsoup4
+urllib3==2.3.0
+    # via requests
+urllib3-future==2.12.915
+    # via niquests
+wassima==1.2.2
+    # via niquests
+werkzeug==3.1.3
+    # via flask
