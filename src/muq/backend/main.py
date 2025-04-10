@@ -58,3 +58,13 @@ def send_pause(auth_code) -> Tuple[bool, str]:
         return (True, "")
     elif response.status_code == 403:
         return (False, "No active playback device")
+
+def send_play(auth_code) -> Tuple[bool, str]:
+    url = "https://api.spotify.com/v1/me/player/play"
+    response = requests.put(url, headers={ 
+        "Authorization": f"Bearer {auth_code}",
+    })
+    if response.status_code == 400: 
+        return (True, "")
+    elif response.status_code == 403:
+        return (False, "Already playing")

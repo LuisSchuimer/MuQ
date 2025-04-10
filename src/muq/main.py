@@ -1,7 +1,8 @@
 from flask import (
     Flask,
     render_template,
-    request
+    request, 
+    redirect
 )
 from muq.backend.main import *
 from http import HTTPStatus
@@ -21,7 +22,15 @@ def main():
 def pause():
     response = send_pause(auth_code)
     if response[0]: 
-        return "", HTTPStatus.OK
+        return redirect("/", 304)
+    else: 
+        return response[1], HTTPStatus.OK
+
+@app.route("/play")
+def play():
+    response = send_play(auth_code)
+    if response[0]: 
+        return redirect("/", 304)
     else: 
         return response[1], HTTPStatus.OK
 
