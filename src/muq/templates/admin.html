@@ -1,0 +1,201 @@
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link href="/static/css/output.css" rel="stylesheet">
+    </head>
+    <body>
+        <div class="fixed bottom-0 w-full bg-gray-400 text-white p-4 shadow-lg">
+            <div class="flex items-center justify-between max-w-6xl mx-auto">
+                <!-- Left section: Song cover and info -->
+                <div class="flex items-center space-x-4">
+                    <div class="w-12 h-12 rounded-lg overflow-hidden">
+                        <img id="songCover" src="https://i.scdn.co/image/ab67616d0000b273987fb4c5ec8790e9f637a4a4" alt="Cover" class="w-full h-full object-cover">
+                    </div>
+                    <div>
+                        <p id="songName" class="font-semibold text-gray-800 text-sm"></p>
+                        <p id="artistName" class="text-gray-900 text-xs"></p>
+                    </div>
+                </div>
+        
+                <!-- Center section: Playback controls -->
+                <div class="flex items-center space-x-6">
+                    <button id="playPauseButton" class="text-white hover:text-green-500">
+                        <img id="playIcon" src="/static/icons/play.svg" alt="Play" class="w-6 h-6" style="display: inline-block;">
+                        <img id="pauseIcon" src="/static/icons/pause.svg" alt="Pause" class="w-6 h-6" style="display: none;">
+                    </button>
+                </div>
+        
+                <!-- Right section: Volume or additional controls (optional) -->
+                <div class="flex items-center space-x-4">
+                    <p>
+                        <p id="progress" class="text-gray-900 text-xs"></p>
+                        <progress id="songProgress" class="progress progress-neutral w-56" value="100" max="100"></progress>
+                        <p id="duration" class="text-gray-900 text-xs"></p>
+                    </p>
+                </div>
+            </div>
+        </div>
+        <!-- Add the lyrics container here -->
+        <div class="lyrics-container mt-4 p-4 bg-gray-800 rounded-lg">
+            <h3 class="text-xl font-semibold text-white">Lyrics</h3>
+            <div id="lyricsContent" class="text-gray-400 mt-2 text-sm overflow-auto">
+                <!-- Lyrics will be displayed here -->
+                <p>No lyrics available</p>
+            </div>
+        </div>
+        <script>
+            let isPlaying = false;  // Initial state for playback
+            let currentSong = '';   // Initial song name
+            let currentCover = '';  // Initial song cover
+            let isButtonDisabled = false;  // Prevent button spam
+            let artist = ''
+
+            // Function to handle the play/pause button click with debounce
+            function togglePlayPause() {
+                if (isButtonDisabled) {
+                    return;  // Ignore button press if it's disabled
+                }
+                
+                isButtonDisabled = true;  // Disable the button temporarily
+
+                const playPauseButton = document.getElementById("playPauseButton");
+                const playIcon = document.getElementById("playIcon");
+                const pauseIcon = document.getElementById("pauseIcon");
+
+                // Toggle the playback state
+                isPlaying = !isPlaying;
+
+                // Update the icons based on the new state
+                if (isPlaying) {
+                    playIcon.style.display = "none";
+                    pauseIcon.style.display = "inline-block";
+
+                    // Send a POST request to play the song
+                    fetch("/play", {
+                        method: "POST",
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            console.error("Failed to play the song.");
+                        }
+                    })
+                    .catch(error => console.error("Error:", error));
+                } else {
+                    playIcon.style.display = "inline-block";
+                    pauseIcon.style.display = "none";
+
+                    // Send a POST request to pause the song
+                    fetch("/pause", {
+                        method: "POST",
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            console.error("Failed to pause the song.");
+                        }
+                    })
+                    .catch(error => console.error("Error:", error));
+                }
+
+                // Re-enable the button after 500ms (adjust as needed)
+                setTimeout(() => {
+                    isButtonDisabled = false;
+                }, 500);  // 500ms delay before the button can be clicked again
+            }
+            function format_time(milliseconds) {
+                all_seconds = Math.round(milliseconds / 1000)
+                minutes = Math.floor(all_seconds / 60)
+                seconds = Math.round(all_seconds % 60)
+                if (seconds < 10) {
+                    return minutes+':0'+seconds
+                } else {
+                    return minutes+':'+seconds
+                }
+            }
+
+            // Function to fetch lyrics for the current song
+            function fetchLyrics(artist, songName) {
+                // Fetch the lyrics from the server
+                fetch(`/lyrics?artist=${encodeURIComponent(artist)}&songName=${encodeURIComponent(songName)}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        const lyricsContent = document.getElementById("lyricsContent");
+
+                        // Check if lyrics are available
+                        if (data.lyrics) {
+                            lyricsContent.innerHTML = data.lyrics; // Use innerHTML to render <br> tags
+                        } else {
+                            lyricsContent.textContent = "Lyrics not found.";
+                        }
+                    })
+                    .catch(error => {
+                        console.error("Error fetching lyrics:", error);
+                    });
+            }
+
+            // Function to listen to SSE stream for state updates
+            function listenToStateStream() {
+                const eventSource = new EventSource("/state/listen");
+
+                eventSource.onmessage = function(event) {
+                    const data = JSON.parse(event.data);
+                    console.log("Received data:", data);
+
+                    if (data.song_name != currentSong) {
+                        fetchLyrics(data.artist, data.song_name);
+                    }
+                    // Update the song name, cover, and playback state
+                    currentSong = data.song_name;
+                    currentCover = data.cover; // Assuming song_cover_url is in the response
+                    isPlaying = data.state;
+                    artist = data.artist;
+                    duration = data.duration;
+                    progress = data.progress;
+
+                    // Update the UI based on the current state
+                    const songNameElement = document.getElementById("songName");
+                    songNameElement.textContent = currentSong;
+
+                    const artistNameElement = document.getElementById("artistName");
+                    artistNameElement.textContent = artist;
+
+                    const songCoverElement = document.getElementById("songCover");
+                    songCoverElement.src = currentCover; // Update the song cover image
+
+
+                    const songProgressElement = document.getElementById("songProgress");
+                    songProgressElement.max = duration
+                    songProgressElement.value = progress
+
+                    const ProgressElement = document.getElementById("progress");
+                    const DurationElement = document.getElementById("duration");
+                    ProgressElement.textContent = format_time(progress)
+                    DurationElement.textContent = format_time(duration)
+
+                    const playPauseButton = document.getElementById("playPauseButton");
+                    const playIcon = document.getElementById("playIcon");
+                    const pauseIcon = document.getElementById("pauseIcon");
+
+                    if (isPlaying) {
+                        playIcon.style.display = "none";
+                        pauseIcon.style.display = "inline-block";
+                    } else {
+                        playIcon.style.display = "inline-block";
+                        pauseIcon.style.display = "none";
+                    }
+
+                };
+
+                eventSource.onerror = function(error) {
+                    console.error("Error with SSE stream:", error);
+                    eventSource.close();  // Close the connection if there's an error
+                };
+            }
+
+            // Start listening to the SSE stream when the page loads
+            window.onload = function() {
+                listenToStateStream();
+                fetchLyrics(); // Fetch lyrics when the page loads
+            };
+        </script>
+</html>

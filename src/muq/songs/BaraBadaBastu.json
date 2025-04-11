@@ -1,0 +1,89 @@
+{
+    "tracks": {
+      "href": "https://api.spotify.com/v1/search?offset=0&limit=1&query=bara%20bada%20bastu&type=track&market=DE&locale=de-DE,de;q%3D0.9,en-US;q%3D0.8,en;q%3D0.7",
+      "limit": 1,
+      "next": "https://api.spotify.com/v1/search?offset=1&limit=1&query=bara%20bada%20bastu&type=track&market=DE&locale=de-DE,de;q%3D0.9,en-US;q%3D0.8,en;q%3D0.7",
+      "offset": 0,
+      "previous": null,
+      "total": 2,
+      "items": [
+        {
+          "album": {
+            "album_type": "single",
+            "artists": [
+              {
+                "external_urls": {
+                  "spotify": "https://open.spotify.com/artist/4blbIMKwfzTxHGvN0Est1t"
+                },
+                "href": "https://api.spotify.com/v1/artists/4blbIMKwfzTxHGvN0Est1t",
+                "id": "4blbIMKwfzTxHGvN0Est1t",
+                "name": "KAJ",
+                "type": "artist",
+                "uri": "spotify:artist:4blbIMKwfzTxHGvN0Est1t"
+              }
+            ],
+            "external_urls": {
+              "spotify": "https://open.spotify.com/album/2zjk45mVWiAZILHTUmR0ON"
+            },
+            "href": "https://api.spotify.com/v1/albums/2zjk45mVWiAZILHTUmR0ON",
+            "id": "2zjk45mVWiAZILHTUmR0ON",
+            "images": [
+              {
+                "height": 640,
+                "width": 640,
+                "url": "https://i.scdn.co/image/ab67616d0000b273beeef739e5c1c30b9539bdea"
+              },
+              {
+                "height": 300,
+                "width": 300,
+                "url": "https://i.scdn.co/image/ab67616d00001e02beeef739e5c1c30b9539bdea"
+              },
+              {
+                "height": 64,
+                "width": 64,
+                "url": "https://i.scdn.co/image/ab67616d00004851beeef739e5c1c30b9539bdea"
+              }
+            ],
+            "is_playable": true,
+            "name": "Bara Bada Bastu",
+            "release_date": "2025-02-21",
+            "release_date_precision": "day",
+            "total_tracks": 1,
+            "type": "album",
+            "uri": "spotify:album:2zjk45mVWiAZILHTUmR0ON"
+          },
+          "artists": [
+            {
+              "external_urls": {
+                "spotify": "https://open.spotify.com/artist/4blbIMKwfzTxHGvN0Est1t"
+              },
+              "href": "https://api.spotify.com/v1/artists/4blbIMKwfzTxHGvN0Est1t",
+              "id": "4blbIMKwfzTxHGvN0Est1t",
+              "name": "KAJ",
+              "type": "artist",
+              "uri": "spotify:artist:4blbIMKwfzTxHGvN0Est1t"
+            }
+          ],
+          "disc_number": 1,
+          "duration_ms": 166880,
+          "explicit": false,
+          "external_ids": {
+            "isrc": "SEPQA2500011"
+          },
+          "external_urls": {
+            "spotify": "https://open.spotify.com/track/2gThkoApt6B7ajBWZRLAVv"
+          },
+          "href": "https://api.spotify.com/v1/tracks/2gThkoApt6B7ajBWZRLAVv",
+          "id": "2gThkoApt6B7ajBWZRLAVv",
+          "is_local": false,
+          "is_playable": true,
+          "name": "Bara Bada Bastu",
+          "popularity": 82,
+          "preview_url": null,
+          "track_number": 1,
+          "type": "track",
+          "uri": "spotify:track:2gThkoApt6B7ajBWZRLAVv"
+        }
+      ]
+    }
+  }

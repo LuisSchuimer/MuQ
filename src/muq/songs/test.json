@@ -1,0 +1,109 @@
+{
+    "device": {
+      "id": "f0ca44374e81106315b6bbee45f4c2ae058cc5cd",
+      "is_active": true,
+      "is_private_session": false,
+      "is_restricted": false,
+      "name": "martins-Lenovo-IdeaPad-S145-15IIL",
+      "type": "Computer",
+      "volume_percent": 100,
+      "supports_volume": true
+    },
+    "repeat_state": "off",
+    "shuffle_state": false,
+    "context": {
+      "type": "artist",
+      "href": "https://api.spotify.com/v1/artists/57nPqD7z62gDdq37US9XJR",
+      "external_urls": {
+        "spotify": "https://open.spotify.com/artist/57nPqD7z62gDdq37US9XJR"
+      },
+      "uri": "spotify:artist:57nPqD7z62gDdq37US9XJR"
+    },
+    "timestamp": 1744289451889,
+    "progress_ms": 99162,
+    "is_playing": true,
+    "item": {
+      "album": {
+        "album_type": "single",
+        "total_tracks": 1,
+        "external_urls": {
+          "spotify": "https://open.spotify.com/album/2zjk45mVWiAZILHTUmR0ON"
+        },
+        "href": "https://api.spotify.com/v1/albums/2zjk45mVWiAZILHTUmR0ON",
+        "id": "2zjk45mVWiAZILHTUmR0ON",
+        "images": [
+          {
+            "url": "https://i.scdn.co/image/ab67616d0000b273beeef739e5c1c30b9539bdea",
+            "height": 640,
+            "width": 640
+          },
+          {
+            "url": "https://i.scdn.co/image/ab67616d00001e02beeef739e5c1c30b9539bdea",
+            "height": 300,
+            "width": 300
+          },
+          {
+            "url": "https://i.scdn.co/image/ab67616d00004851beeef739e5c1c30b9539bdea",
+            "height": 64,
+            "width": 64
+          }
+        ],
+        "name": "Bara Bada Bastu",
+        "release_date": "2025-02-21",
+        "release_date_precision": "day",
+        "type": "album",
+        "uri": "spotify:album:2zjk45mVWiAZILHTUmR0ON",
+        "artists": [
+          {
+            "external_urls": {
+              "spotify": "https://open.spotify.com/artist/4blbIMKwfzTxHGvN0Est1t"
+            },
+            "href": "https://api.spotify.com/v1/artists/4blbIMKwfzTxHGvN0Est1t",
+            "id": "4blbIMKwfzTxHGvN0Est1t",
+            "name": "KAJ",
+            "type": "artist",
+            "uri": "spotify:artist:4blbIMKwfzTxHGvN0Est1t"
+          }
+        ],
+        "is_playable": true
+      },
+      "artists": [
+        {
+          "external_urls": {
+            "spotify": "https://open.spotify.com/artist/4blbIMKwfzTxHGvN0Est1t"
+          },
+          "href": "https://api.spotify.com/v1/artists/4blbIMKwfzTxHGvN0Est1t",
+          "id": "4blbIMKwfzTxHGvN0Est1t",
+          "name": "KAJ",
+          "type": "artist",
+          "uri": "spotify:artist:4blbIMKwfzTxHGvN0Est1t"
+        }
+      ],
+      "disc_number": 1,
+      "duration_ms": 166880,
+      "explicit": false,
+      "external_ids": {
+        "isrc": "SEPQA2500011"
+      },
+      "external_urls": {
+        "spotify": "https://open.spotify.com/track/2gThkoApt6B7ajBWZRLAVv"
+      },
+      "href": "https://api.spotify.com/v1/tracks/2gThkoApt6B7ajBWZRLAVv",
+      "id": "2gThkoApt6B7ajBWZRLAVv",
+      "is_playable": true,
+      "name": "Bara Bada Bastu",
+      "popularity": 82,
+      "preview_url": null,
+      "track_number": 1,
+      "type": "track",
+      "uri": "spotify:track:2gThkoApt6B7ajBWZRLAVv",
+      "is_local": false
+    },
+    "currently_playing_type": "track",
+    "actions": {
+      "disallows": {
+        "resuming": true
+      }
+    },
+    "smart_shuffle": false
+  }
