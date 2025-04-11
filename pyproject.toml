@@ -29,6 +29,8 @@ dev-dependencies = []
 dev = "python3 -m muq.main"
 backend = "python3 -m muq.backend.main"
 validation = "python3 -m muq.backend.song_validation"
+css-gen = "rye run tailwindcss-extra --input src/muq/static/css/input.css --output src/muq/static/css/output.css --watch"
+css-build = "rye run tailwindcss-extra --input src/muq/static/css/input.css --output src/muq/static/css/output.css"
 
 [tool.hatch.metadata]
 allow-direct-references = true
