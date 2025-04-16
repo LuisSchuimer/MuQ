@@ -67,7 +67,7 @@ def send_play(auth_code) -> Tuple[bool, str]:
     response = requests.put(url, headers={ 
         "Authorization": f"Bearer {auth_code}",
     })
-    if response.status_code == 400: 
+    if response.status_code == 200: 
         return (True, "")
     elif response.status_code == 403:
         return (False, "Already playing")
@@ -78,18 +78,22 @@ def get_state(auth_code):
         url = "https://api.spotify.com/v1/me/player"
         response = requests.get(url, headers={
             "Authorization": f"Bearer {auth_code}",
+            "market": "DE"
         })
-        data = loads(response.text)
-        #print(response.text)
-        state = {
-        "state": data["is_playing"], 
-        "song_name": data["item"]["name"], 
-        "artist": data["item"]["artists"][0]["name"], 
-        "album": data["item"]["album"]["name"],
-        "progress": data["progress_ms"], 
-        "duration": data["item"]["duration_ms"],
-        "cover": data["item"]["album"]["images"][0]["url"],
-        }
+        try:
+            data = loads(response.text)
+            #print(response.text)
+            state = {
+                "state": data["is_playing"],
+                "song_url": data["item"]["external_urls"]["spotify"],
+                "song_name": data["item"]["name"], 
+                "artist": data["item"]["artists"][0]["name"], 
+                "album": data["item"]["album"]["name"],
+                "progress": data["progress_ms"], 
+                "duration": data["item"]["duration_ms"],
+                "cover": data["item"]["album"]["images"][2]["url"],
+            }
+        except: return {"state": None}
     
     time = datetime.now().replace(microsecond=0)
     return state

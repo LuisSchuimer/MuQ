@@ -29,14 +29,12 @@ def main():
 @app.route("/pause", methods=["POST"])
 def pause():
     response = send_pause(auth_code)
-    print(response)
     if response[0]: return "", HTTPStatus.OK
     else: return "", HTTPStatus.BAD_REQUEST
 
 @app.route("/play", methods=["POST"])
 def play():
     response = send_play(auth_code)
-    print(response)
     if response[0]: return "", HTTPStatus.OK
     else: return "", HTTPStatus.BAD_REQUEST
 

@@ -13,14 +13,14 @@
                         <img id="songCover" src="https://i.scdn.co/image/ab67616d0000b273987fb4c5ec8790e9f637a4a4" alt="Cover" class="w-full h-full object-cover">
                     </div>
                     <div>
-                        <p id="songName" class="font-semibold text-gray-800 text-sm"></p>
+                        <a id="songUrl" target="_blank"><p id="songName" class="font-semibold text-gray-800 text-sm"></p></a>
                         <p id="artistName" class="text-gray-900 text-xs"></p>
                     </div>
                 </div>
         
                 <!-- Center section: Playback controls -->
                 <div class="flex items-center space-x-6">
-                    <button id="playPauseButton" class="text-white hover:text-green-500">
+                    <button id="playPauseButton" class="text-white hover:text-green-500" onclick="togglePlayPause()">
                         <img id="playIcon" src="/static/icons/play.svg" alt="Play" class="w-6 h-6" style="display: inline-block;">
                         <img id="pauseIcon" src="/static/icons/pause.svg" alt="Pause" class="w-6 h-6" style="display: none;">
                     </button>
@@ -116,6 +116,8 @@
             // Function to fetch lyrics for the current song
             function fetchLyrics(artist, songName) {
                 // Fetch the lyrics from the server
+                const lyricsContent = document.getElementById("lyricsContent");
+                lyricsContent.innerHTML = "Searching...";
                 fetch(`/lyrics?artist=${encodeURIComponent(artist)}&songName=${encodeURIComponent(songName)}`)
                     .then(response => response.json())
                     .then(data => {
@@ -142,26 +144,40 @@
                     console.log("Received data:", data);
 
                     if (data.song_name != currentSong) {
-                        fetchLyrics(data.artist, data.song_name);
+                        console.log(data.song_name)
+                        if (data.artist && data.song_name) {
+                            fetchLyrics(data.artist, data.song_name);
+                        }
                     }
                     // Update the song name, cover, and playback state
-                    currentSong = data.song_name;
-                    currentCover = data.cover; // Assuming song_cover_url is in the response
                     isPlaying = data.state;
-                    artist = data.artist;
-                    duration = data.duration;
-                    progress = data.progress;
+                    if (isPlaying != null) {
+                        currentSong = data.song_name;
+                        currentCover = data.cover; // Assuming song_cover_url is in the response
+                        artist = data.artist;
+                        duration = data.duration;
+                        progress = data.progress;
+                        song_url = data.song_url;
+                    } else {
+                        currentSong = "Player not active"
+                    }
 
                     // Update the UI based on the current state
                     const songNameElement = document.getElementById("songName");
-                    songNameElement.textContent = currentSong;
+                    if (songNameElement.textContent != currentSong) {
+                        songNameElement.textContent = currentSong;
+                        document.getElementById("songUrl").setAttribute("href", song_url);
+                    }
 
                     const artistNameElement = document.getElementById("artistName");
-                    artistNameElement.textContent = artist;
+                    if (artistNameElement.textContent != artist) {
+                        artistNameElement.textContent = artist;
+                    }
 
                     const songCoverElement = document.getElementById("songCover");
-                    songCoverElement.src = currentCover; // Update the song cover image
-
+                    if (songCoverElement.textContent != currentCover) {
+                        songCoverElement.src = currentCover; 
+                    }
 
                     const songProgressElement = document.getElementById("songProgress");
                     songProgressElement.max = duration
@@ -175,14 +191,14 @@
                     const playPauseButton = document.getElementById("playPauseButton");
                     const playIcon = document.getElementById("playIcon");
                     const pauseIcon = document.getElementById("pauseIcon");
-
-                    if (isPlaying) {
+        
+                    if (isPlaying && playIcon.style.display != "none") {
                         playIcon.style.display = "none";
                         pauseIcon.style.display = "inline-block";
-                    } else {
+                    } else if (!isPlaying && playIcon.style.display != "inline-block"){
                         playIcon.style.display = "inline-block";
                         pauseIcon.style.display = "none";
-                    }
+                    }  
 
                 };
 
@@ -195,7 +211,6 @@
             // Start listening to the SSE stream when the page loads
             window.onload = function() {
                 listenToStateStream();
-                fetchLyrics(); // Fetch lyrics when the page loads
             };
         </script>
 </html>
