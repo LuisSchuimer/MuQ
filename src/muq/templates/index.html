@@ -4,47 +4,165 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link href="/static/css/output.css" rel="stylesheet">
     </head>
-</html>
+<body class="h-screen flex flex-col bg-base-100">
+  <div class="p-6 flex-1 overflow-y-auto bg-base-200 rounded-xl shadow-lg border border-base-300">
+    <h2 class="text-lg font-semibold mb-4">Warteschlange</h2>
+    <div class="overflow-x-auto w-full">
+      <table class="table table-zebra w-full text-sm">
+        <thead>
+          <tr>
+            <th class="w-12"></th>
+            <th>Name</th>
+            <th class="w-16 text-right">Länge</th>
+            <th class="w-16 text-right">Song in</th>
+          </tr>
+        </thead>
+        <tbody id="queueBody">
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="p-4 flex-none bg-base-100 border-t border-base-300 shadow-xl sticky bottom-0">
+    <button id="addToQueue" class="btn btn-block shadow-md">Einen Song hinzufügen</button>
+    <div class="mt-4 bg-base-200 p-4 rounded-lg shadow-xl border border-base-300">
+      <!-- Current song info -->
+      <div class="flex items-center">
+        <div class="avatar">
+          <div class="mask mask-squircle w-12 h-12">
+            <img id="currentCover" src="" alt="Album cover" />
+          </div>
+        </div>
+        <div class="ml-4">
+          <p id="currentTitle" class="font-semibold mb-1">Title</p>
+          <p id="currentArtist" class="text-sm opacity-50">Artist</p>
+        </div>
+      </div>
+      <!-- Progress bar -->
+      <div class="mt-4 flex items-center space-x-4">
+        <span id="progress" class="text-sm opacity-50"></span>
+        <progress id="songProgress" class="progress progress-neutral w-56" value="0" max="100"></progress>
+        <span id="duration" class="text-sm opacity-50"></span>
+      </div>
+    </div>
+  </div>
+</body>
+<script>
+  let isPlaying = false;  // Initial state for playback
+  let currentSong = '';   // Initial song name
+  let currentCover = '';  // Initial song cover
+  let artist = ''
 
-  <div class="overflow-x-auto">
-    <table class="table">
-      <!-- head -->
-      <thead>
-        <tr>
-          <th></th>
-          <th>Name</th>
-          <th>Album</th>
-          <th>Länge</th>
-          <th></th>
-        </tr>
-      </thead>
-      <tbody>
-        <!-- row 1 -->
-        <tr>
-            <th>
-                <div class="text-4xl font-thin opacity-30 tabular-nums">01</div>
+  function format_time(milliseconds, only_minutes) {
+      all_seconds = Math.round(milliseconds / 1000)
+      minutes = Math.floor(all_seconds / 60)
+      seconds = Math.round(all_seconds % 60)
+      if (only_minutes) {
+        return minutes
+      }
+      if (seconds < 10) {
+          return minutes+':0'+seconds
+      } else {
+          return minutes+':'+seconds
+      }
+  }
+
+  // Function to listen to SSE stream for state updates
+  function listenToStateStream() {
+    let retryTimeout = null;
+    let eventSource = null;
+
+    function connect() {
+      eventSource = new EventSource("/state/listen");
+
+      eventSource.onmessage = function(event) {
+        console.log(event);
+        const data = JSON.parse(event.data);
+        console.log("Received data:", data.state_data);
+
+        // Update the song name, cover, and playback state
+        isPlaying = data.state_data.state;
+        if (isPlaying != null) {
+          currentSong = data.state_data.song_name;
+          currentCover = data.state_data.cover;
+          artist = data.state_data.artist;
+          duration = data.state_data.duration;
+          progress = data.state_data.progress;
+          song_url = data.state_data.song_url;
+        } else {
+          currentSong = "Player not active";
+        }
+
+        const songNameElement = document.getElementById("currentTitle");
+        if (songNameElement.textContent != currentSong) {
+          songNameElement.textContent = currentSong;
+          document.getElementById("songUrl")?.setAttribute("href", song_url);
+        }
+
+        const artistNameElement = document.getElementById("currentArtist");
+        if (artistNameElement.textContent != artist) {
+          artistNameElement.textContent = artist;
+        }
+
+        const songCoverElement = document.getElementById("currentCover");
+        if (songCoverElement.textContent != currentCover) {
+          songCoverElement.src = currentCover;
+        }
+
+        const songProgressElement = document.getElementById("songProgress");
+        songProgressElement.max = duration;
+        songProgressElement.value = progress;
+
+        const ProgressElement = document.getElementById("progress");
+        const DurationElement = document.getElementById("duration");
+        ProgressElement.textContent = format_time(progress);
+        DurationElement.textContent = format_time(duration);
+
+        const queueBody = document.getElementById('queueBody');
+        queueBody.innerHTML = '';
+        (data.queue_data || []).forEach(item => {
+          const row = document.createElement('tr');
+          row.className = 'hover:bg-base-200';
+          row.innerHTML = `
+            <th class="relative w-12">
+              ${item.cover_url ? `
+              <img src="${item.cover_url}" alt="" class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-8 h-8 object-cover blur-none sm:hidden rounded-md opacity-50" />` : ''}
+              <div class="relative text-base sm:text-lg font-thin opacity-100 tabular-nums">${item.num_in_queue}</div>
             </th>
-          <td>
-            <div class="flex items-center gap-3">
-              <div class="avatar">
-                <div class="mask mask-squircle h-12 w-12">
-                  <img
-                    src="https://i.scdn.co/image/ab67616d0000b273987fb4c5ec8790e9f637a4a4"
-                    alt="Avatar Tailwind CSS Component" />
+            <td>
+              <div class="flex items-center gap-3">
+                ${item.cover_url ? `
+                <div class="avatar hidden sm:block">
+                  <div class="mask mask-squircle w-10 h-10 sm:w-12 sm:h-12">
+                    <img src="${item.cover_url}" alt="Album cover" />
+                  </div>
+                </div>` : ''}
+                <div>
+                  <div class="font-semibold leading-tight text-xs sm:text-sm">${item.titel}</div>
+                  <div class="text-[10px] sm:text-xs opacity-50">${item.artist}</div>
                 </div>
               </div>
-              <div>
-                <div class="font-bold">CASTLE OF GLASS</div>
-                <div class="text-sm opacity-50">Linkin Park</div>
-              </div>
-            </div>
-          </td>
-          <td>
-            LIVING THINGS
-          </td>
-          <th>
-            3:30
-          </th>
-        </tr>
-    </table>
-  </div>
+            </td>
+            <td class="text-right font-semibold">${format_time(item.length)}</td>
+            <td class="text-right font-semibold">-${format_time(item.time_till_song)}</td>
+          `;
+          queueBody.appendChild(row);
+        });
+      };
+
+      eventSource.onerror = function(error) {
+        console.error("Error with SSE stream, retrying in 1 seconds...", error);
+        eventSource.close();
+        if (retryTimeout) clearTimeout(retryTimeout);
+        retryTimeout = setTimeout(connect, 1000);
+      };
+    }
+
+    connect();
+  }
+
+  // Start listening to the SSE stream when the page loads
+  window.onload = function() {
+      listenToStateStream();
+  };
+</script>
+</html>

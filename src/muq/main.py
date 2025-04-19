@@ -23,7 +23,7 @@ app = Flask(__name__)
 
 
 @app.route("/", methods=["GET"])
-def main(): 
+def main():
     return render_template("index.html")
 
 @app.route("/pause", methods=["POST"])
@@ -37,6 +37,11 @@ def play():
     response = send_play(auth_code)
     if response[0]: return "", HTTPStatus.OK
     else: return "", HTTPStatus.BAD_REQUEST
+
+@app.route("/test")
+def test():
+    res = get_queue(auth_code)
+    return res, HTTPStatus.OK
 
 @app.route("/admin", methods=["GET"])
 def admin():
@@ -60,9 +65,12 @@ def _format_sse(data, event=None) -> str:
 def listen():
     def stream():
         last_send_data: str = ""
-        while True: 
-            new_data = dumps(get_state(auth_code))
-            if new_data != last_send_data: 
+        while True:
+            new_data = dumps({
+                "state_data": get_state(auth_code),
+                "queue_data": get_queue(auth_code)
+            })
+            if new_data != last_send_data:
                 last_send_data = new_data; yield _format_sse(new_data)
     
     return Response(stream(), mimetype='text/event-stream')

@@ -140,24 +140,25 @@
                 const eventSource = new EventSource("/state/listen");
 
                 eventSource.onmessage = function(event) {
+                    console.log(event);
                     const data = JSON.parse(event.data);
-                    console.log("Received data:", data);
+                    console.log("Received data:", data.state_data);
 
-                    if (data.song_name != currentSong) {
-                        console.log(data.song_name)
-                        if (data.artist && data.song_name) {
-                            fetchLyrics(data.artist, data.song_name);
+                    if (data.state_data.song_name != currentSong) {
+                        console.log(data.state_data.song_name)
+                        if (data.state_data.artist && data.state_data.song_name) {
+                            fetchLyrics(data.state_data.artist, data.state_data.song_name);
                         }
                     }
                     // Update the song name, cover, and playback state
-                    isPlaying = data.state;
+                    isPlaying = data.state_data.state;
                     if (isPlaying != null) {
-                        currentSong = data.song_name;
-                        currentCover = data.cover; // Assuming song_cover_url is in the response
-                        artist = data.artist;
-                        duration = data.duration;
-                        progress = data.progress;
-                        song_url = data.song_url;
+                        currentSong = data.state_data.song_name;
+                        currentCover = data.state_data.cover; // Assuming song_cover_url is in the response
+                        artist = data.state_data.artist;
+                        duration = data.state_data.duration;
+                        progress = data.state_data.progress;
+                        song_url = data.state_data.song_url;
                     } else {
                         currentSong = "Player not active"
                     }
