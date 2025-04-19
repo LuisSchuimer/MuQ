@@ -1,0 +1,658 @@
+{
+    "tracks": {
+      "href": "https://api.spotify.com/v1/search?offset=0&limit=10&query=Fuck%20You&type=track&market=DE&locale=de-DE,de;q%3D0.9,en-US;q%3D0.8,en;q%3D0.7",
+      "limit": 10,
+      "next": "https://api.spotify.com/v1/search?offset=10&limit=10&query=Fuck%20You&type=track&market=DE&locale=de-DE,de;q%3D0.9,en-US;q%3D0.8,en;q%3D0.7",
+      "offset": 0,
+      "previous": null,
+      "total": 912,
+      "items": [
+        {
+          "album": {
+            "album_type": "album",
+            "total_tracks": 17,
+            "external_urls": {
+              "spotify": "https://open.spotify.com/album/3MnOoZGbCDAjLf8jOImSbg"
+            },
+            "href": "https://api.spotify.com/v1/albums/3MnOoZGbCDAjLf8jOImSbg",
+            "id": "3MnOoZGbCDAjLf8jOImSbg",
+            "images": [
+              {
+                "url": "https://i.scdn.co/image/ab67616d0000b273e0e33df58a7b008049dbefde",
+                "height": 640,
+                "width": 640
+              },
+              {
+                "url": "https://i.scdn.co/image/ab67616d00001e02e0e33df58a7b008049dbefde",
+                "height": 300,
+                "width": 300
+              },
+              {
+                "url": "https://i.scdn.co/image/ab67616d00004851e0e33df58a7b008049dbefde",
+                "height": 64,
+                "width": 64
+              }
+            ],
+            "name": "The Lady Killer (The Platinum Edition)",
+            "release_date": "2010-11-09",
+            "release_date_precision": "day",
+            "type": "album",
+            "uri": "spotify:album:3MnOoZGbCDAjLf8jOImSbg",
+            "artists": [
+              {
+                "external_urls": {
+                  "spotify": "https://open.spotify.com/artist/5nLYd9ST4Cnwy6NHaCxbj8"
+                },
+                "href": "https://api.spotify.com/v1/artists/5nLYd9ST4Cnwy6NHaCxbj8",
+                "id": "5nLYd9ST4Cnwy6NHaCxbj8",
+                "name": "CeeLo Green",
+                "type": "artist",
+                "uri": "spotify:artist:5nLYd9ST4Cnwy6NHaCxbj8"
+              }
+            ],
+            "is_playable": true
+          },
+          "artists": [
+            {
+              "external_urls": {
+                "spotify": "https://open.spotify.com/artist/5nLYd9ST4Cnwy6NHaCxbj8"
+              },
+              "href": "https://api.spotify.com/v1/artists/5nLYd9ST4Cnwy6NHaCxbj8",
+              "id": "5nLYd9ST4Cnwy6NHaCxbj8",
+              "name": "CeeLo Green",
+              "type": "artist",
+              "uri": "spotify:artist:5nLYd9ST4Cnwy6NHaCxbj8"
+            }
+          ],
+          "disc_number": 1,
+          "duration_ms": 223066,
+          "explicit": true,
+          "external_ids": {
+            "isrc": "USAT21001785"
+          },
+          "external_urls": {
+            "spotify": "https://open.spotify.com/track/1zneM1cLjM6w8BFmukl2Lr"
+          },
+          "href": "https://api.spotify.com/v1/tracks/1zneM1cLjM6w8BFmukl2Lr",
+          "id": "1zneM1cLjM6w8BFmukl2Lr",
+          "is_playable": true,
+          "name": "Fuck You",
+          "popularity": 62,
+          "preview_url": null,
+          "track_number": 17,
+          "type": "track",
+          "uri": "spotify:track:1zneM1cLjM6w8BFmukl2Lr",
+          "is_local": false
+        },
+        {
+          "album": {
+            "album_type": "album",
+            "total_tracks": 12,
+            "external_urls": {
+              "spotify": "https://open.spotify.com/album/03r2opEvFi1PEs2SrkWMKV"
+            },
+            "href": "https://api.spotify.com/v1/albums/03r2opEvFi1PEs2SrkWMKV",
+            "id": "03r2opEvFi1PEs2SrkWMKV",
+            "images": [
+              {
+                "url": "https://i.scdn.co/image/ab67616d0000b2736abee8fee54e914eef72f167",
+                "height": 640,
+                "width": 640
+              },
+              {
+                "url": "https://i.scdn.co/image/ab67616d00001e026abee8fee54e914eef72f167",
+                "height": 300,
+                "width": 300
+              },
+              {
+                "url": "https://i.scdn.co/image/ab67616d000048516abee8fee54e914eef72f167",
+                "height": 64,
+                "width": 64
+              }
+            ],
+            "name": "It's Not Me, It's You",
+            "release_date": "2009-01-26",
+            "release_date_precision": "day",
+            "type": "album",
+            "uri": "spotify:album:03r2opEvFi1PEs2SrkWMKV",
+            "artists": [
+              {
+                "external_urls": {
+                  "spotify": "https://open.spotify.com/artist/13saZpZnCDWOI9D4IJhp1f"
+                },
+                "href": "https://api.spotify.com/v1/artists/13saZpZnCDWOI9D4IJhp1f",
+                "id": "13saZpZnCDWOI9D4IJhp1f",
+                "name": "Lily Allen",
+                "type": "artist",
+                "uri": "spotify:artist:13saZpZnCDWOI9D4IJhp1f"
+              }
+            ],
+            "is_playable": true
+          },
+          "artists": [
+            {
+              "external_urls": {
+                "spotify": "https://open.spotify.com/artist/13saZpZnCDWOI9D4IJhp1f"
+              },
+              "href": "https://api.spotify.com/v1/artists/13saZpZnCDWOI9D4IJhp1f",
+              "id": "13saZpZnCDWOI9D4IJhp1f",
+              "name": "Lily Allen",
+              "type": "artist",
+              "uri": "spotify:artist:13saZpZnCDWOI9D4IJhp1f"
+            }
+          ],
+          "disc_number": 1,
+          "duration_ms": 219893,
+          "explicit": true,
+          "external_ids": {
+            "isrc": "GBAYE0802265"
+          },
+          "external_urls": {
+            "spotify": "https://open.spotify.com/track/6ylAVPbjRQoNY0khgh63Jf"
+          },
+          "href": "https://api.spotify.com/v1/tracks/6ylAVPbjRQoNY0khgh63Jf",
+          "id": "6ylAVPbjRQoNY0khgh63Jf",
+          "is_playable": true,
+          "name": "Fuck You",
+          "popularity": 59,
+          "preview_url": null,
+          "track_number": 8,
+          "type": "track",
+          "uri": "spotify:track:6ylAVPbjRQoNY0khgh63Jf",
+          "is_local": false
+        },
+        {
+          "album": {
+            "album_type": "album",
+            "total_tracks": 23,
+            "external_urls": {
+              "spotify": "https://open.spotify.com/album/7q2B4M5EiBkqrlsNW8lB7N"
+            },
+            "href": "https://api.spotify.com/v1/albums/7q2B4M5EiBkqrlsNW8lB7N",
+            "id": "7q2B4M5EiBkqrlsNW8lB7N",
+            "images": [
+              {
+                "url": "https://i.scdn.co/image/ab67616d0000b2739b19c107109de740bad72df5",
+                "height": 640,
+                "width": 640
+              },
+              {
+                "url": "https://i.scdn.co/image/ab67616d00001e029b19c107109de740bad72df5",
+                "height": 300,
+                "width": 300
+              },
+              {
+                "url": "https://i.scdn.co/image/ab67616d000048519b19c107109de740bad72df5",
+                "height": 64,
+                "width": 64
+              }
+            ],
+            "name": "2001",
+            "release_date": "1999-11-16",
+            "release_date_precision": "day",
+            "type": "album",
+            "uri": "spotify:album:7q2B4M5EiBkqrlsNW8lB7N",
+            "artists": [
+              {
+                "external_urls": {
+                  "spotify": "https://open.spotify.com/artist/6DPYiyq5kWVQS4RGwxzPC7"
+                },
+                "href": "https://api.spotify.com/v1/artists/6DPYiyq5kWVQS4RGwxzPC7",
+                "id": "6DPYiyq5kWVQS4RGwxzPC7",
+                "name": "Dr. Dre",
+                "type": "artist",
+                "uri": "spotify:artist:6DPYiyq5kWVQS4RGwxzPC7"
+              }
+            ],
+            "is_playable": true
+          },
+          "artists": [
+            {
+              "external_urls": {
+                "spotify": "https://open.spotify.com/artist/6DPYiyq5kWVQS4RGwxzPC7"
+              },
+              "href": "https://api.spotify.com/v1/artists/6DPYiyq5kWVQS4RGwxzPC7",
+              "id": "6DPYiyq5kWVQS4RGwxzPC7",
+              "name": "Dr. Dre",
+              "type": "artist",
+              "uri": "spotify:artist:6DPYiyq5kWVQS4RGwxzPC7"
+            },
+            {
+              "external_urls": {
+                "spotify": "https://open.spotify.com/artist/0OMJR0LjjKv21qNvICTgbi"
+              },
+              "href": "https://api.spotify.com/v1/artists/0OMJR0LjjKv21qNvICTgbi",
+              "id": "0OMJR0LjjKv21qNvICTgbi",
+              "name": "Devin The Dude",
+              "type": "artist",
+              "uri": "spotify:artist:0OMJR0LjjKv21qNvICTgbi"
+            },
+            {
+              "external_urls": {
+                "spotify": "https://open.spotify.com/artist/7hJcb9fa4alzcOq3EaNPoG"
+              },
+              "href": "https://api.spotify.com/v1/artists/7hJcb9fa4alzcOq3EaNPoG",
+              "id": "7hJcb9fa4alzcOq3EaNPoG",
+              "name": "Snoop Dogg",
+              "type": "artist",
+              "uri": "spotify:artist:7hJcb9fa4alzcOq3EaNPoG"
+            }
+          ],
+          "disc_number": 1,
+          "duration_ms": 205453,
+          "explicit": true,
+          "external_ids": {
+            "isrc": "USIR19915067"
+          },
+          "external_urls": {
+            "spotify": "https://open.spotify.com/track/4FI0rdztOAYJZMupujL5Gp"
+          },
+          "href": "https://api.spotify.com/v1/tracks/4FI0rdztOAYJZMupujL5Gp",
+          "id": "4FI0rdztOAYJZMupujL5Gp",
+          "is_playable": true,
+          "name": "Fuck You",
+          "popularity": 66,
+          "preview_url": null,
+          "track_number": 3,
+          "type": "track",
+          "uri": "spotify:track:4FI0rdztOAYJZMupujL5Gp",
+          "is_local": false
+        },
+        {
+          "album": {
+            "album_type": "single",
+            "total_tracks": 1,
+            "external_urls": {
+              "spotify": "https://open.spotify.com/album/78mZr9DIy1zaOKWjxManOE"
+            },
+            "href": "https://api.spotify.com/v1/albums/78mZr9DIy1zaOKWjxManOE",
+            "id": "78mZr9DIy1zaOKWjxManOE",
+            "images": [
+              {
+                "url": "https://i.scdn.co/image/ab67616d0000b2736e2ac4a8936eb1ba252ce8d6",
+                "height": 640,
+                "width": 640
+              },
+              {
+                "url": "https://i.scdn.co/image/ab67616d00001e026e2ac4a8936eb1ba252ce8d6",
+                "height": 300,
+                "width": 300
+              },
+              {
+                "url": "https://i.scdn.co/image/ab67616d000048516e2ac4a8936eb1ba252ce8d6",
+                "height": 64,
+                "width": 64
+              }
+            ],
+            "name": "FUCK YOU LIKE A SLUT (Extended Mix)",
+            "release_date": "2022-01-14",
+            "release_date_precision": "day",
+            "type": "album",
+            "uri": "spotify:album:78mZr9DIy1zaOKWjxManOE",
+            "artists": [
+              {
+                "external_urls": {
+                  "spotify": "https://open.spotify.com/artist/1M8Qepgsc1j5MzQor7uTE6"
+                },
+                "href": "https://api.spotify.com/v1/artists/1M8Qepgsc1j5MzQor7uTE6",
+                "id": "1M8Qepgsc1j5MzQor7uTE6",
+                "name": "Tiefundton",
+                "type": "artist",
+                "uri": "spotify:artist:1M8Qepgsc1j5MzQor7uTE6"
+              }
+            ],
+            "is_playable": true
+          },
+          "artists": [
+            {
+              "external_urls": {
+                "spotify": "https://open.spotify.com/artist/1M8Qepgsc1j5MzQor7uTE6"
+              },
+              "href": "https://api.spotify.com/v1/artists/1M8Qepgsc1j5MzQor7uTE6",
+              "id": "1M8Qepgsc1j5MzQor7uTE6",
+              "name": "Tiefundton",
+              "type": "artist",
+              "uri": "spotify:artist:1M8Qepgsc1j5MzQor7uTE6"
+            }
+          ],
+          "disc_number": 1,
+          "duration_ms": 365269,
+          "explicit": true,
+          "external_ids": {
+            "isrc": "QM42K2208892"
+          },
+          "external_urls": {
+            "spotify": "https://open.spotify.com/track/2pde78aMh0Qf82gZcxvBjW"
+          },
+          "href": "https://api.spotify.com/v1/tracks/2pde78aMh0Qf82gZcxvBjW",
+          "id": "2pde78aMh0Qf82gZcxvBjW",
+          "is_playable": true,
+          "name": "FUCK YOU LIKE A SLUT - Extended Mix",
+          "popularity": 46,
+          "preview_url": null,
+          "track_number": 1,
+          "type": "track",
+          "uri": "spotify:track:2pde78aMh0Qf82gZcxvBjW",
+          "is_local": false
+        },
+        {
+          "album": {
+            "album_type": "single",
+            "total_tracks": 1,
+            "external_urls": {
+              "spotify": "https://open.spotify.com/album/5HMlL16emGXXziWqyBX4zM"
+            },
+            "href": "https://api.spotify.com/v1/albums/5HMlL16emGXXziWqyBX4zM",
+            "id": "5HMlL16emGXXziWqyBX4zM",
+            "images": [
+              {
+                "url": "https://i.scdn.co/image/ab67616d0000b27340dd154daca1f02eb647f0fe",
+                "height": 640,
+                "width": 640
+              },
+              {
+                "url": "https://i.scdn.co/image/ab67616d00001e0240dd154daca1f02eb647f0fe",
+                "height": 300,
+                "width": 300
+              },
+              {
+                "url": "https://i.scdn.co/image/ab67616d0000485140dd154daca1f02eb647f0fe",
+                "height": 64,
+                "width": 64
+              }
+            ],
+            "name": "Fuck You",
+            "release_date": "2021-09-17",
+            "release_date_precision": "day",
+            "type": "album",
+            "uri": "spotify:album:5HMlL16emGXXziWqyBX4zM",
+            "artists": [
+              {
+                "external_urls": {
+                  "spotify": "https://open.spotify.com/artist/7adCbfW9aRcBxWhuuSNXTo"
+                },
+                "href": "https://api.spotify.com/v1/artists/7adCbfW9aRcBxWhuuSNXTo",
+                "id": "7adCbfW9aRcBxWhuuSNXTo",
+                "name": "Florentina",
+                "type": "artist",
+                "uri": "spotify:artist:7adCbfW9aRcBxWhuuSNXTo"
+              }
+            ],
+            "is_playable": true
+          },
+          "artists": [
+            {
+              "external_urls": {
+                "spotify": "https://open.spotify.com/artist/7adCbfW9aRcBxWhuuSNXTo"
+              },
+              "href": "https://api.spotify.com/v1/artists/7adCbfW9aRcBxWhuuSNXTo",
+              "id": "7adCbfW9aRcBxWhuuSNXTo",
+              "name": "Florentina",
+              "type": "artist",
+              "uri": "spotify:artist:7adCbfW9aRcBxWhuuSNXTo"
+            },
+            {
+              "external_urls": {
+                "spotify": "https://open.spotify.com/artist/6Cw4b0HJcYPaG1ik1tpdZa"
+              },
+              "href": "https://api.spotify.com/v1/artists/6Cw4b0HJcYPaG1ik1tpdZa",
+              "id": "6Cw4b0HJcYPaG1ik1tpdZa",
+              "name": "Samo104",
+              "type": "artist",
+              "uri": "spotify:artist:6Cw4b0HJcYPaG1ik1tpdZa"
+            }
+          ],
+          "disc_number": 1,
+          "duration_ms": 160240,
+          "explicit": true,
+          "external_ids": {
+            "isrc": "FRX452169040"
+          },
+          "external_urls": {
+            "spotify": "https://open.spotify.com/track/7IkS2mrz9GylKs489t7Uu5"
+          },
+          "href": "https://api.spotify.com/v1/tracks/7IkS2mrz9GylKs489t7Uu5",
+          "id": "7IkS2mrz9GylKs489t7Uu5",
+          "is_playable": true,
+          "name": "Fuck You",
+          "popularity": 42,
+          "preview_url": null,
+          "track_number": 1,
+          "type": "track",
+          "uri": "spotify:track:7IkS2mrz9GylKs489t7Uu5",
+          "is_local": false
+        },
+        {
+          "album": {
+            "album_type": "album",
+            "total_tracks": 23,
+            "external_urls": {
+              "spotify": "https://open.spotify.com/album/4igqw0NNmYEsOVU4zeu1LG"
+            },
+            "href": "https://api.spotify.com/v1/albums/4igqw0NNmYEsOVU4zeu1LG",
+            "id": "4igqw0NNmYEsOVU4zeu1LG",
+            "images": [
+              {
+                "url": "https://i.scdn.co/image/ab67616d0000b273e834267b8d605d9b37bf832b",
+                "height": 640,
+                "width": 640
+              },
+              {
+                "url": "https://i.scdn.co/image/ab67616d00001e02e834267b8d605d9b37bf832b",
+                "height": 300,
+                "width": 300
+              },
+              {
+                "url": "https://i.scdn.co/image/ab67616d00004851e834267b8d605d9b37bf832b",
+                "height": 64,
+                "width": 64
+              }
+            ],
+            "name": "It's Not Me, It's You (Special Edition)",
+            "release_date": "2009-11-16",
+            "release_date_precision": "day",
+            "type": "album",
+            "uri": "spotify:album:4igqw0NNmYEsOVU4zeu1LG",
+            "artists": [
+              {
+                "external_urls": {
+                  "spotify": "https://open.spotify.com/artist/13saZpZnCDWOI9D4IJhp1f"
+                },
+                "href": "https://api.spotify.com/v1/artists/13saZpZnCDWOI9D4IJhp1f",
+                "id": "13saZpZnCDWOI9D4IJhp1f",
+                "name": "Lily Allen",
+                "type": "artist",
+                "uri": "spotify:artist:13saZpZnCDWOI9D4IJhp1f"
+              }
+            ],
+            "is_playable": true
+          },
+          "artists": [
+            {
+              "external_urls": {
+                "spotify": "https://open.spotify.com/artist/13saZpZnCDWOI9D4IJhp1f"
+              },
+              "href": "https://api.spotify.com/v1/artists/13saZpZnCDWOI9D4IJhp1f",
+              "id": "13saZpZnCDWOI9D4IJhp1f",
+              "name": "Lily Allen",
+              "type": "artist",
+              "uri": "spotify:artist:13saZpZnCDWOI9D4IJhp1f"
+            }
+          ],
+          "disc_number": 1,
+          "duration_ms": 223080,
+          "explicit": true,
+          "external_ids": {
+            "isrc": "GBAYE0802265"
+          },
+          "external_urls": {
+            "spotify": "https://open.spotify.com/track/3ZhLeIbuUTR10WTljA972g"
+          },
+          "href": "https://api.spotify.com/v1/tracks/3ZhLeIbuUTR10WTljA972g",
+          "id": "3ZhLeIbuUTR10WTljA972g",
+          "is_playable": true,
+          "name": "Fuck You",
+          "popularity": 38,
+          "preview_url": null,
+          "track_number": 8,
+          "type": "track",
+          "uri": "spotify:track:3ZhLeIbuUTR10WTljA972g",
+          "is_local": false
+        },
+        {
+          "album": {
+            "album_type": "single",
+            "total_tracks": 4,
+            "external_urls": {
+              "spotify": "https://open.spotify.com/album/23M1xUF2RoRSvXtpwQP4rJ"
+            },
+            "href": "https://api.spotify.com/v1/albums/23M1xUF2RoRSvXtpwQP4rJ",
+            "id": "23M1xUF2RoRSvXtpwQP4rJ",
+            "images": [
+              {
+                "url": "https://i.scdn.co/image/ab67616d0000b2733acbe79d4a2013021b607a84",
+                "height": 640,
+                "width": 640
+              },
+              {
+                "url": "https://i.scdn.co/image/ab67616d00001e023acbe79d4a2013021b607a84",
+                "height": 300,
+                "width": 300
+              },
+              {
+                "url": "https://i.scdn.co/image/ab67616d000048513acbe79d4a2013021b607a84",
+                "height": 64,
+                "width": 64
+              }
+            ],
+            "name": "abcdefu (angrier)",
+            "release_date": "2021-09-24",
+            "release_date_precision": "day",
+            "type": "album",
+            "uri": "spotify:album:23M1xUF2RoRSvXtpwQP4rJ",
+            "artists": [
+              {
+                "external_urls": {
+                  "spotify": "https://open.spotify.com/artist/2VSHKHBTiXWplO8lxcnUC9"
+                },
+                "href": "https://api.spotify.com/v1/artists/2VSHKHBTiXWplO8lxcnUC9",
+                "id": "2VSHKHBTiXWplO8lxcnUC9",
+                "name": "GAYLE",
+                "type": "artist",
+                "uri": "spotify:artist:2VSHKHBTiXWplO8lxcnUC9"
+              }
+            ],
+            "is_playable": true
+          },
+          "artists": [
+            {
+              "external_urls": {
+                "spotify": "https://open.spotify.com/artist/2VSHKHBTiXWplO8lxcnUC9"
+              },
+              "href": "https://api.spotify.com/v1/artists/2VSHKHBTiXWplO8lxcnUC9",
+              "id": "2VSHKHBTiXWplO8lxcnUC9",
+              "name": "GAYLE",
+              "type": "artist",
+              "uri": "spotify:artist:2VSHKHBTiXWplO8lxcnUC9"
+            }
+          ],
+          "disc_number": 1,
+          "duration_ms": 159836,
+          "explicit": true,
+          "external_ids": {
+            "isrc": "USAT22105185"
+          },
+          "external_urls": {
+            "spotify": "https://open.spotify.com/track/1EQFOouqdKYdpbNoOHRVO2"
+          },
+          "href": "https://api.spotify.com/v1/tracks/1EQFOouqdKYdpbNoOHRVO2",
+          "id": "1EQFOouqdKYdpbNoOHRVO2",
+          "is_playable": true,
+          "name": "abcdefu (angrier)",
+          "popularity": 66,
+          "preview_url": null,
+          "track_number": 1,
+          "type": "track",
+          "uri": "spotify:track:1EQFOouqdKYdpbNoOHRVO2",
+          "is_local": false
+        },
+        {
+          "album": {
+            "album_type": "album",
+            "total_tracks": 12,
+            "external_urls": {
+              "spotify": "https://open.spotify.com/album/5QLG8VsiMIZ6f6NvN1E9Hk"
+            },
+            "href": "https://api.spotify.com/v1/albums/5QLG8VsiMIZ6f6NvN1E9Hk",
+            "id": "5QLG8VsiMIZ6f6NvN1E9Hk",
+            "images": [
+              {
+                "url": "https://i.scdn.co/image/ab67616d0000b27318f8f9361f7565e58fcbfd5b",
+                "height": 640,
+                "width": 640
+              },
+              {
+                "url": "https://i.scdn.co/image/ab67616d00001e0218f8f9361f7565e58fcbfd5b",
+                "height": 300,
+                "width": 300
+              },
+              {
+                "url": "https://i.scdn.co/image/ab67616d0000485118f8f9361f7565e58fcbfd5b",
+                "height": 64,
+                "width": 64
+              }
+            ],
+            "name": "… Still Fucking Angry",
+            "release_date": "2024-04-26",
+            "release_date_precision": "day",
+            "type": "album",
+            "uri": "spotify:album:5QLG8VsiMIZ6f6NvN1E9Hk",
+            "artists": [
+              {
+                "external_urls": {
+                  "spotify": "https://open.spotify.com/artist/0YmxnPLHQMe8rx2sk5rZdf"
+                },
+                "href": "https://api.spotify.com/v1/artists/0YmxnPLHQMe8rx2sk5rZdf",
+                "id": "0YmxnPLHQMe8rx2sk5rZdf",
+                "name": "Fucking Angry",
+                "type": "artist",
+                "uri": "spotify:artist:0YmxnPLHQMe8rx2sk5rZdf"
+              }
+            ],
+            "is_playable": true
+          },
+          "artists": [
+            {
+              "external_urls": {
+                "spotify": "https://open.spotify.com/artist/0YmxnPLHQMe8rx2sk5rZdf"
+              },
+              "href": "https://api.spotify.com/v1/artists/0YmxnPLHQMe8rx2sk5rZdf",
+              "id": "0YmxnPLHQMe8rx2sk5rZdf",
+              "name": "Fucking Angry",
+              "type": "artist",
+              "uri": "spotify:artist:0YmxnPLHQMe8rx2sk5rZdf"
+            }
+          ],
+          "disc_number": 1,
+          "duration_ms": 171996,
+          "explicit": true,
+          "external_ids": {
+            "isrc": "DEOV42301331"
+          },
+          "external_urls": {
+            "spotify": "https://open.spotify.com/track/5B4ivNWlMA2an3HZfR3MQ8"
+          },
+          "href": "https://api.spotify.com/v1/tracks/5B4ivNWlMA2an3HZfR3MQ8",
+          "id": "5B4ivNWlMA2an3HZfR3MQ8",
+          "is_playable": true,
+          "name": "F*ck You All",
+          "popularity": 18,
+          "preview_url": null,
+          "track_number": 12,
+          "type": "track",
+          "uri": "spotify:track:5B4ivNWlMA2an3HZfR3MQ8",
+          "is_local": false
+        }
+      ]
+    }
+  }

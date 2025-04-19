@@ -3,9 +3,16 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link href="/static/css/output.css" rel="stylesheet">
+        <script src="https://unpkg.com/htmx.org@1.9.2"></script>
     </head>
 <body class="h-screen flex flex-col bg-base-100">
-  <div class="p-6 flex-1 overflow-y-auto bg-base-200 rounded-xl shadow-lg border border-base-300">
+  <!-- Top Glass Bar (blurry & translucent) -->
+  <div class="w-full p-4 text-center text-2xl font-bold bg-base-100/30 backdrop-blur-md">
+    MuQ
+  </div>
+
+  <!-- QUEUE SECTION -->
+  <div id="queueSection" class="p-6 flex-1 overflow-y-auto bg-base-200 rounded-xl shadow-lg border border-base-300">
     <h2 class="text-lg font-semibold mb-4">Warteschlange</h2>
     <div class="overflow-x-auto w-full">
       <table class="table table-zebra w-full text-sm">
@@ -22,147 +29,194 @@
       </table>
     </div>
   </div>
-  <div class="p-4 flex-none bg-base-100 border-t border-base-300 shadow-xl sticky bottom-0">
-    <button id="addToQueue" class="btn btn-block shadow-md">Einen Song hinzufügen</button>
-    <div class="mt-4 bg-base-200 p-4 rounded-lg shadow-xl border border-base-300">
-      <!-- Current song info -->
-      <div class="flex items-center">
-        <div class="avatar">
-          <div class="mask mask-squircle w-12 h-12">
-            <img id="currentCover" src="" alt="Album cover" />
-          </div>
-        </div>
-        <div class="ml-4">
-          <p id="currentTitle" class="font-semibold mb-1">Title</p>
-          <p id="currentArtist" class="text-sm opacity-50">Artist</p>
-        </div>
-      </div>
-      <!-- Progress bar -->
-      <div class="mt-4 flex items-center space-x-4">
-        <span id="progress" class="text-sm opacity-50"></span>
-        <progress id="songProgress" class="progress progress-neutral w-56" value="0" max="100"></progress>
-        <span id="duration" class="text-sm opacity-50"></span>
+
+  <!-- SEARCH/ADD SONG SECTION -->
+  <div id="searchSection"
+      class="hidden p-6 flex-1 overflow-y-auto bg-base-200 rounded-xl shadow-lg border border-base-300 flex flex-col">
+    <h3 class="text-lg font-semibold mb-4">Song hinzufügen</h3>
+    <form
+      action="/search"
+      hx-get="/search"
+      hx-indicator=".htmx-indicator"
+      hx-target="#searchResults"
+      hx-swap="innerHTML"
+      class="flex mb-4 gap-2"
+    >
+      <input
+        name="query"
+        id="songQuery"
+        type="text"
+        placeholder="Songname"
+        class="input input-bordered flex-1"
+      />
+      <button type="submit" class="btn btn-primary">Suchen</button>
+      <button type="button" id="cancelAdd" class="btn">Abbrechen</button>
+    </form>
+    <div id="searchResults" class="space-y-2 max-h-[50vh] overflow-y-auto">
+      <div class="flex justify-center items-center">
+        <span
+          class="htmx-indicator center loading loading-spinner loading-lg mt-16"
+        ></span>
       </div>
     </div>
   </div>
-</body>
-<script>
-  let isPlaying = false;  // Initial state for playback
-  let currentSong = '';   // Initial song name
-  let currentCover = '';  // Initial song cover
-  let artist = ''
 
-  function format_time(milliseconds, only_minutes) {
-      all_seconds = Math.round(milliseconds / 1000)
-      minutes = Math.floor(all_seconds / 60)
-      seconds = Math.round(all_seconds % 60)
-      if (only_minutes) {
-        return minutes
-      }
-      if (seconds < 10) {
-          return minutes+':0'+seconds
-      } else {
-          return minutes+':'+seconds
-      }
-  }
+  <div class="p-4 flex-none bg-base-100 border-t border-base-300 shadow-xl sticky bottom-0 flex gap-2 justify-center">
+    <button id="showQueue" class="btn btn-sm shadow-md">Warteschlange</button>
+    <button id="addToQueue" class="btn btn-sm shadow-md">Song hinzufügen</button>
+  </div>
 
-  // Function to listen to SSE stream for state updates
-  function listenToStateStream() {
-    let retryTimeout = null;
-    let eventSource = null;
+  <div class="mt-4 bg-base-200 p-4 rounded-lg shadow-xl border border-base-300 w-full text-center">
+    <!-- Current song info -->
+    <div class="flex items-center justify-center">
+      <div class="avatar">
+        <div class="mask mask-squircle w-12 h-12">
+          <img id="currentCover" src="" alt="Album cover" />
+        </div>
+      </div>
+      <div class="ml-4">
+        <p id="currentTitle" class="font-semibold mb-1">Title</p>
+        <p id="currentArtist" class="text-sm opacity-50">Artist</p>
+      </div>
+    </div>
+    <!-- Progress bar -->
+    <div class="mt-4 flex items-center justify-center space-x-4">
+      <span id="progress" class="text-sm opacity-50"></span>
+      <progress id="songProgress" class="progress progress-neutral w-56" value="0" max="100"></progress>
+      <span id="duration" class="text-sm opacity-50"></span>
+    </div>
+  </div>
 
-    function connect() {
-      eventSource = new EventSource("/state/listen");
+  <script>
+    let currentSong = '';   // Initial song name
+    let currentCover = '';  // Initial song cover
+    let artist = ''
 
-      eventSource.onmessage = function(event) {
-        console.log(event);
-        const data = JSON.parse(event.data);
-        console.log("Received data:", data.state_data);
+    // Function to listen to SSE stream for state updates
+    function listenToStateStream() {
+      let retryTimeout = null;
+      let eventSource = null;
 
-        // Update the song name, cover, and playback state
-        isPlaying = data.state_data.state;
-        if (isPlaying != null) {
-          currentSong = data.state_data.song_name;
-          currentCover = data.state_data.cover;
-          artist = data.state_data.artist;
-          duration = data.state_data.duration;
-          progress = data.state_data.progress;
-          song_url = data.state_data.song_url;
-        } else {
-          currentSong = "Player not active";
-        }
+      function connect() {
+        eventSource = new EventSource("/state/listen");
 
-        const songNameElement = document.getElementById("currentTitle");
-        if (songNameElement.textContent != currentSong) {
-          songNameElement.textContent = currentSong;
-          document.getElementById("songUrl")?.setAttribute("href", song_url);
-        }
+        eventSource.onmessage = function(event) {
+          console.log(event);
+          const data = JSON.parse(event.data);
+          console.log("Received data:", data.state_data);
 
-        const artistNameElement = document.getElementById("currentArtist");
-        if (artistNameElement.textContent != artist) {
-          artistNameElement.textContent = artist;
-        }
+          // Update the song name, cover, and playback state
+          isPlaying = data.state_data.state;
+          if (isPlaying != null) {
+            currentSong = data.state_data.song_name;
+            currentCover = data.state_data.cover;
+            artist = data.state_data.artist;
+            duration = data.state_data.duration;
+            progress = data.state_data.progress;
+            duration_ms = data.state_data.duration_ms;
+            progress_ms = data.state_data.progress_ms;
+            song_url = data.state_data.song_url;
+          } else {
+            currentSong = "Player not active";
+          }
 
-        const songCoverElement = document.getElementById("currentCover");
-        if (songCoverElement.textContent != currentCover) {
-          songCoverElement.src = currentCover;
-        }
+          const songNameElement = document.getElementById("currentTitle");
+          if (songNameElement.textContent != currentSong) {
+            songNameElement.textContent = currentSong;
+            document.getElementById("songUrl")?.setAttribute("href", song_url);
+          }
 
-        const songProgressElement = document.getElementById("songProgress");
-        songProgressElement.max = duration;
-        songProgressElement.value = progress;
+          const artistNameElement = document.getElementById("currentArtist");
+          if (artistNameElement.textContent != artist) {
+            artistNameElement.textContent = artist;
+          }
 
-        const ProgressElement = document.getElementById("progress");
-        const DurationElement = document.getElementById("duration");
-        ProgressElement.textContent = format_time(progress);
-        DurationElement.textContent = format_time(duration);
+          const songCoverElement = document.getElementById("currentCover");
+          if (songCoverElement.textContent != currentCover) {
+            songCoverElement.src = currentCover;
+          }
 
-        const queueBody = document.getElementById('queueBody');
-        queueBody.innerHTML = '';
-        (data.queue_data || []).forEach(item => {
-          const row = document.createElement('tr');
-          row.className = 'hover:bg-base-200';
-          row.innerHTML = `
-            <th class="relative w-12">
-              ${item.cover_url ? `
-              <img src="${item.cover_url}" alt="" class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-8 h-8 object-cover blur-none sm:hidden rounded-md opacity-50" />` : ''}
-              <div class="relative text-base sm:text-lg font-thin opacity-100 tabular-nums">${item.num_in_queue}</div>
-            </th>
-            <td>
-              <div class="flex items-center gap-3">
+          const songProgressElement = document.getElementById("songProgress");
+          songProgressElement.max = duration_ms;
+          songProgressElement.value = progress_ms;
+
+          const ProgressElement = document.getElementById("progress");
+          const DurationElement = document.getElementById("duration");
+          ProgressElement.textContent = progress;
+          DurationElement.textContent = duration;
+
+          const queueBody = document.getElementById('queueBody');
+          queueBody.innerHTML = '';
+          (data.queue_data || []).forEach(item => {
+            const row = document.createElement('tr');
+            row.className = 'hover:bg-base-200';
+            row.innerHTML = `
+              <th class="relative w-12">
                 ${item.cover_url ? `
-                <div class="avatar hidden sm:block">
-                  <div class="mask mask-squircle w-10 h-10 sm:w-12 sm:h-12">
-                    <img src="${item.cover_url}" alt="Album cover" />
+                <img src="${item.cover_url}" alt="" class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-8 h-8 object-cover blur-none sm:hidden rounded-md opacity-50" />` : ''}
+                <div class="relative text-base sm:text-lg font-thin opacity-100 tabular-nums">${item.num_in_queue}</div>
+              </th>
+              <td>
+                <div class="flex items-center gap-3">
+                  ${item.cover_url ? `
+                  <div class="avatar hidden sm:block">
+                    <div class="mask mask-squircle w-10 h-10 sm:w-12 sm:h-12">
+                      <img src="${item.cover_url}" alt="Album cover" />
+                    </div>
+                  </div>` : ''}
+                  <div>
+                    <div class="font-semibold leading-tight text-xs sm:text-sm">${item.titel}</div>
+                    <div class="text-[10px] sm:text-xs opacity-50">${item.artist}</div>
                   </div>
-                </div>` : ''}
-                <div>
-                  <div class="font-semibold leading-tight text-xs sm:text-sm">${item.titel}</div>
-                  <div class="text-[10px] sm:text-xs opacity-50">${item.artist}</div>
                 </div>
-              </div>
-            </td>
-            <td class="text-right font-semibold">${format_time(item.length)}</td>
-            <td class="text-right font-semibold">-${format_time(item.time_till_song)}</td>
-          `;
-          queueBody.appendChild(row);
-        });
-      };
+              </td>
+              <td class="text-right font-semibold">${item.length}</td>
+              <td class="text-right font-semibold">-${item.time_till_song}</td>
+            `;
+            queueBody.appendChild(row);
+          });
+        };
 
-      eventSource.onerror = function(error) {
-        console.error("Error with SSE stream, retrying in 1 seconds...", error);
-        eventSource.close();
-        if (retryTimeout) clearTimeout(retryTimeout);
-        retryTimeout = setTimeout(connect, 1000);
-      };
+        eventSource.onerror = function(error) {
+          console.error("Error with SSE stream, retrying in 1 seconds...", error);
+          eventSource.close();
+          if (retryTimeout) clearTimeout(retryTimeout);
+          retryTimeout = setTimeout(connect, 1000);
+        };
+      }
+
+      connect();
     }
 
-    connect();
-  }
+    // show queue section
+    document.getElementById('showQueue').addEventListener('click', () => {
+      document.getElementById('searchSection').classList.add('hidden');
+      document.getElementById('queueSection').classList.remove('hidden');
+    });
 
-  // Start listening to the SSE stream when the page loads
-  window.onload = function() {
-      listenToStateStream();
-  };
-</script>
+    // toggle add-song section
+    document.getElementById('addToQueue').addEventListener('click', () => {
+      document.getElementById('queueSection').classList.add('hidden');
+      document.getElementById('searchSection').classList.remove('hidden');
+    });
+    document.getElementById('cancelAdd').addEventListener('click', () => {
+      document.getElementById('searchSection').classList.add('hidden');
+      document.getElementById('queueSection').classList.remove('hidden');
+    });
+
+    // Start listening to the SSE stream when the page loads
+    window.onload = function() {
+        listenToStateStream();
+    };
+  </script>
+
+  <!-- Footer -->
+  <footer class="p-2 bg-base-100/50 backdrop-blur-sm text-center text-xs text-gray-400">
+    <a href="https://github.com/LuisSchuimer/MuQ" target="_blank" class="font-medium hover:underline">
+      GitHub Repo
+    </a>
+    <span class="mx-1">&bull;</span>
+    Made by Luis Schuimer and Mattis Jung  &copy; 2025
+  </footer>
+</body>
 </html>

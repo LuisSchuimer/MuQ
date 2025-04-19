@@ -47,6 +47,22 @@ def test():
 def admin():
     return render_template("admin.html", current_state=get_state(auth_code))
 
+@app.route("/search")
+def make_search():
+    query = request.args.get("query")
+    search(auth_code, query)
+    return render_template(
+        "components/song_card.html",
+        results=search(auth_code, query)
+    )
+
+@app.route("/add/queue", methods=["POST"])
+def add_song_to_queue():
+    song_uri = request.args.get("song_uri")
+    res = add_to_queue(auth_code, song_uri)
+    if res[0]: return "", HTTPStatus.OK
+    else: return "", HTTPStatus.BAD_REQUEST
+
 def _format_sse(data, event=None) -> str:
     """
     Formats data as a valid SSE message with properly serialized JSON.

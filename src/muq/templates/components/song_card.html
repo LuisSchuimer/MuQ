@@ -1,0 +1,27 @@
+{% for item in results %}
+    <form
+        action="/add/queue?song_uri={{ item.uri }}"
+        hx-post="/add/queue?song_uri={{ item.uri }}"
+        hx-target="#queueBody"
+        hx-swap="beforeend"
+        class="flex items-center justify-between bg-base-100 p-2 rounded-lg shadow"
+    >
+        <div class="flex items-center">
+            <img
+                src="{{ item.cover_url }}"
+                alt=""
+                class="w-10 h-10 mask mask-squircle"
+            />
+            <div class="ml-2 text-left">
+                <p class="font-semibold text-sm">{{ item.name }}</p>
+                <p class="text-xs opacity-50">{{ item.artist }}</p>
+            </div>
+        </div>
+        <div class="flex items-center gap-2">
+            <span class="text-sm opacity-50">{{ item.duration }}</span>
+            <button type="submit" class="btn btn-xs btn-primary">
+                Hinzufügen
+            </button>
+        </div>
+    </form>
+{% endfor %}

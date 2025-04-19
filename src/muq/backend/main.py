@@ -18,6 +18,17 @@ queue_time = None
 print(client_id)
 print(client_secret)
 
+def format_time(milliseconds: int, only_minutes: bool = False) -> str | int:
+    """
+    Convert milliseconds to 'M:SS' format, or return minutes if only_minutes=True.
+    """
+    total_sec = round(milliseconds / 1000)
+    minutes = total_sec // 60
+    seconds = total_sec % 60
+    if only_minutes:
+        return minutes
+    return f"{minutes}:{seconds:02d}"
+
 def authenticate() -> str:
     params = {
         "client_id": client_id,
@@ -31,7 +42,7 @@ def authenticate() -> str:
 
     return authorization_url
 
-def get_access_token(authorization_code) -> str | None:
+def get_access_token(authorization_code: str) -> str | None:
     url = "https://accounts.spotify.com/api/token"
     payload = {
         "grant_type": "authorization_code",
@@ -55,7 +66,7 @@ def get_access_token(authorization_code) -> str | None:
         print("Failed to obtain access token:", response.text)
         return None
 
-def send_pause(auth_code) -> Tuple[bool, str]:
+def send_pause(auth_code: str) -> Tuple[bool, str]:
     url = "https://api.spotify.com/v1/me/player/pause"
     response = requests.put(url, headers={
         "Authorization": f"Bearer {auth_code}",
@@ -65,7 +76,7 @@ def send_pause(auth_code) -> Tuple[bool, str]:
     elif response.status_code == 403:
         return (False, "No active playback device")
 
-def send_play(auth_code) -> Tuple[bool, str]:
+def send_play(auth_code: str) -> Tuple[bool, str]:
     url = "https://api.spotify.com/v1/me/player/play"
     response = requests.put(url, headers={
         "Authorization": f"Bearer {auth_code}",
@@ -75,7 +86,7 @@ def send_play(auth_code) -> Tuple[bool, str]:
     elif response.status_code == 403:
         return (False, "Already playing")
 
-def get_state(auth_code):
+def get_state(auth_code: str) -> list[dict]:
     global state_time, state
     current_time = datetime.now()
     if state_time is None or (current_time - state_time).total_seconds() >= 1:
@@ -92,8 +103,10 @@ def get_state(auth_code):
                 "song_name": data["item"]["name"],
                 "artist": get_artists(data["item"]["artists"]),
                 "album": data["item"]["album"]["name"],
-                "progress": data["progress_ms"],
-                "duration": data["item"]["duration_ms"],
+                "progress": format_time(data["progress_ms"]),
+                "duration": format_time(data["item"]["duration_ms"]),
+                "progress_ms": data["progress_ms"],
+                "duration_ms": data["item"]["duration_ms"],
                 "cover": data["item"]["album"]["images"][2]["url"],
             }
         except Exception as err:
@@ -102,9 +115,9 @@ def get_state(auth_code):
         state_time = current_time
     return state
 
-def get_queue(auth_code):
+def get_queue(auth_code: str) -> list[dict]:
     state_data = get_state(auth_code)
-    current_time_till_next = int(state_data["duration"]) - int(state_data["progress"])
+    current_time_till_next = int(state_data["duration_ms"]) - int(state_data["progress_ms"])
     global queue_time, queue
     current_time = datetime.now()
     if queue_time is None or (current_time - queue_time).total_seconds() >= 1:
@@ -123,12 +136,12 @@ def get_queue(auth_code):
                 new_queue.append({
                     "titel": elem["name"],
                     "cover_url": elem["album"]["images"][2]["url"],
-                    "length": elem["duration_ms"],
+                    "length": format_time(elem["duration_ms"]),
                     "artist": get_artists(elem["artists"]),
                     "num_in_queue": num_in_queue,
                     "sp_url": elem["external_urls"]["spotify"],
                     "sp_id": elem["uri"],
-                    "time_till_song": ms_till_song
+                    "time_till_song": format_time(ms_till_song)
                 })
                 ms_till_song += elem["duration_ms"]
             queue = new_queue
@@ -138,7 +151,7 @@ def get_queue(auth_code):
         queue_time = current_time
     return queue
 
-def get_artists(data):
+def get_artists(data: any) -> str:
     artists = ""
     try:
         for elem in data:
@@ -146,3 +159,34 @@ def get_artists(data):
     except Exception as e:
         print(f"Error processing artists: {e}")
     return artists.rstrip(", ")
+
+def search(auth_code: str, title: str) -> list[dict]:
+    url = f"https://api.spotify.com/v1/search?q={title}&type=track&market=DE&limit=10&offset=0"
+
+    response = requests.get(url, headers={
+        "Authorization": f"Bearer {auth_code}",
+    })
+    try:
+        data = loads(response.text)
+        results = []
+        for elem in data["tracks"]["items"]:
+            results.append({
+                "uri": elem["uri"],
+                "cover_url": elem["album"]["images"][2]["url"],
+                "name": elem["name"],
+                "artist": get_artists(elem["artists"]),
+                "explicit": elem["explicit"],
+                "duration": format_time(elem["duration_ms"]),
+            })
+    except Exception as err:
+        print(err)
+
+    return results
+
+def add_to_queue(auth_code: str, song_uri: str) -> Tuple[bool, str]:
+    url = f"https://api.spotify.com/v1/me/player/queue?uri={song_uri}"
+    response = requests.post(url, headers={
+        "Authorization": f"Bearer {auth_code}"
+    })
+    if response.status_code == 200:
+        return (True, "")     

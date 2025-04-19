@@ -102,16 +102,6 @@
                     isButtonDisabled = false;
                 }, 500);  // 500ms delay before the button can be clicked again
             }
-            function format_time(milliseconds) {
-                all_seconds = Math.round(milliseconds / 1000)
-                minutes = Math.floor(all_seconds / 60)
-                seconds = Math.round(all_seconds % 60)
-                if (seconds < 10) {
-                    return minutes+':0'+seconds
-                } else {
-                    return minutes+':'+seconds
-                }
-            }
 
             // Function to fetch lyrics for the current song
             function fetchLyrics(artist, songName) {
@@ -158,6 +148,8 @@
                         artist = data.state_data.artist;
                         duration = data.state_data.duration;
                         progress = data.state_data.progress;
+                        duration_ms = data.state_data.duration_ms;
+                        progress_ms = data.state_data.progress_ms;
                         song_url = data.state_data.song_url;
                     } else {
                         currentSong = "Player not active"
@@ -181,13 +173,13 @@
                     }
 
                     const songProgressElement = document.getElementById("songProgress");
-                    songProgressElement.max = duration
-                    songProgressElement.value = progress
+                    songProgressElement.max = duration_ms;
+                    songProgressElement.value = progress_ms;
 
                     const ProgressElement = document.getElementById("progress");
                     const DurationElement = document.getElementById("duration");
-                    ProgressElement.textContent = format_time(progress)
-                    DurationElement.textContent = format_time(duration)
+                    ProgressElement.textContent = progress;
+                    DurationElement.textContent = duration;
 
                     const playPauseButton = document.getElementById("playPauseButton");
                     const playIcon = document.getElementById("playIcon");
