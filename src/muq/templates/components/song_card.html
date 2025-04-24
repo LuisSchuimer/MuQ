@@ -1,7 +1,7 @@
 {% for item in results %}
     <form
-        action="/add/queue?song_uri={{ item.uri }}"
-        hx-post="/add/queue?song_uri={{ item.uri }}"
+        action="/add/queue?song_uri={{ item.uri }}&song_name={{ item.name }}&song_artist={{ item.artist }}&song_cover={{ item.cover_url }}"
+        hx-post="/add/queue?song_uri={{ item.uri }}&song_name={{ item.name }}&song_artist={{ item.artist }}&song_cover={{ item.cover_url }}"
         hx-target="#queueBody"
         hx-swap="beforeend"
         class="flex items-center justify-between bg-base-100 p-2 rounded-lg shadow"

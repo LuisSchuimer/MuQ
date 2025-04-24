@@ -3,13 +3,15 @@ from flask import (
     render_template,
     request,
     Response,
-    jsonify
+    jsonify,
+    make_response
 )
 from json import dumps
 from muq.backend.main import *
 from http import HTTPStatus
 from dotenv import dotenv_values
 from muq.backend.song_validation import fetch_lyrics
+from uuid import uuid4
 
 auth_code: str = ""
 auth_link = authenticate()
@@ -24,6 +26,12 @@ app = Flask(__name__)
 
 @app.route("/", methods=["GET"])
 def main():
+    user_id = request.cookies.get("user_id")
+    if user_id is None:
+        user_id = str(uuid4())
+        response = make_response(render_template("index.html"))
+        response.set_cookie("user_id", user_id, max_age=60 * 60 * 24 * 30)
+        return response
     return render_template("index.html")
 
 @app.route("/pause", methods=["POST"])
@@ -58,10 +66,19 @@ def make_search():
 
 @app.route("/add/queue", methods=["POST"])
 def add_song_to_queue():
+    user_id = request.cookies.get("user_id")
+    if not user_id:
+        return "", HTTPStatus.UNAUTHORIZED
     song_uri = request.args.get("song_uri")
-    res = add_to_queue(auth_code, song_uri)
+    song_name = request.args.get("song_name")
+    song_artist = request.args.get("song_artist")
+    song_cover_url = request.args.get("song_cover")
+    
+    if not song_uri or not song_name or not song_artist or not song_cover_url:
+        return "", HTTPStatus.BAD_REQUEST
+    res = add_to_queue(auth_code, song_uri, user_id, song_name, song_artist, song_cover_url)
     if res[0]: return "", HTTPStatus.OK
-    else: return "", HTTPStatus.BAD_REQUEST
+    else: return "", HTTPStatus.CONFLICT
 
 def _format_sse(data, event=None) -> str:
     """
@@ -77,7 +94,7 @@ def _format_sse(data, event=None) -> str:
         msg = f'event: {event}\n{msg}'
     return msg
 
-@app.route('/state/listen', methods=['GET'])
+@app.route('/data/listen', methods=['GET'])
 def listen():
     def stream():
         last_send_data: str = ""
@@ -100,6 +117,13 @@ def lyrics():
         return jsonify(fetched_lyrics), HTTPStatus.OK
     else:
         return jsonify({"error": "Artist or song name missing"}), HTTPStatus.BAD_REQUEST
+    
+@app.route("/data/get_added")
+def get_added():
+    user_id = request.cookies.get("user_id")
+    if not user_id:
+        return "", HTTPStatus.UNAUTHORIZED
+    return jsonify(get_songs_added_by_user(user_id)), HTTPStatus.OK
 
 @app.route("/callback")
 def auth_callback():

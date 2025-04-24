@@ -8,6 +8,7 @@ wheels/
 *.egg-info
 .env
 .DS_Store
+songs.db
 
 # venv
 .venv

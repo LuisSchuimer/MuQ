@@ -32,7 +32,7 @@
 
   <!-- SEARCH/ADD SONG SECTION -->
   <div id="searchSection"
-      class="hidden p-6 flex-1 overflow-y-auto bg-base-200 rounded-xl shadow-lg border border-base-300 flex flex-col">
+       class="hidden p-6 flex-1 overflow-y-auto bg-base-200 rounded-xl shadow-lg border border-base-300 flex flex-col">
     <h3 class="text-lg font-semibold mb-4">Song hinzufügen</h3>
     <form
       action="/search"
@@ -50,20 +50,36 @@
         class="input input-bordered flex-1"
       />
       <button type="submit" class="btn btn-primary">Suchen</button>
+      <button type="button" id="clearSearch" class="btn">Leeren</button>
       <button type="button" id="cancelAdd" class="btn">Abbrechen</button>
     </form>
+
+    <!-- spinner outside of results so it's never removed -->
+    <div class="flex justify-center items-center">
+      <span class="htmx-indicator loading loading-spinner loading-lg mt-4"></span>
+    </div>
+
     <div id="searchResults" class="space-y-2 max-h-[50vh] overflow-y-auto">
-      <div class="flex justify-center items-center">
-        <span
-          class="htmx-indicator center loading loading-spinner loading-lg mt-16"
-        ></span>
-      </div>
+      <!-- results injected here -->
     </div>
   </div>
 
+  <!-- MEINE HINZUGEFÜGTEN SONGS SECTION -->
+  <div id="myAddedSongsSection" class="hidden p-6 flex-1 overflow-y-auto bg-base-200 rounded-xl border border-base-300 flex flex-col shadow-lg">
+    <div class="flex justify-between items-center mb-4">
+      <h3 class="text-lg font-semibold">Meine hinzugefügten Songs</h3>
+      <button type="button" id="cancelMyAddedSongs" class="btn btn-sm">Abbrechen</button>
+    </div>
+    <!-- Content for the user's added songs will go here -->
+    <div id="myAddedSongsList" class="flex-1 overflow-y-auto space-y-2">
+      <!-- dynamically populated -->
+    </div>
+  </div>
+  
   <div class="p-4 flex-none bg-base-100 border-t border-base-300 shadow-xl sticky bottom-0 flex gap-2 justify-center">
-    <button id="showQueue" class="btn btn-sm shadow-md">Warteschlange</button>
-    <button id="addToQueue" class="btn btn-sm shadow-md">Song hinzufügen</button>
+    <button id="showQueue"        class="btn btn-xs sm:btn-sm shadow-md">Warteschlange</button>
+    <button id="addToQueue"       class="btn btn-xs sm:btn-sm shadow-md">Hinzufügen</button>
+    <button id="showMyAddedSongs" class="btn btn-xs sm:btn-sm shadow-md">Meine Songs</button>
   </div>
 
   <div class="mt-4 bg-base-200 p-4 rounded-lg shadow-xl border border-base-300 w-full text-center">
@@ -88,66 +104,101 @@
   </div>
 
   <script>
-    let currentSong = '';   // Initial song name
-    let currentCover = '';  // Initial song cover
-    let artist = ''
+    // central state for SSE
+    const playerState = {
+      isPlaying: null,
+      songName: '',
+      coverUrl: '',
+      artist: '',
+      duration: '',
+      progress: '',
+      durationMs: 0,
+      progressMs: 0,
+      songUrl: '',
+      queueData: []
+    };
 
-    // Function to listen to SSE stream for state updates
+    // store all songs this user ever added
+    const myAddedSongs = {};
+
+    // flag to fetch only once
+    let hasLoadedMyAdded = false;
+
+    // helper to read user_id cookie
+    function getUserId() {
+      return document.cookie
+        .split('; ')
+        .find(row => row.startsWith('user_id='))
+        ?.split('=')[1] || '';
+    }
+
     function listenToStateStream() {
-      let retryTimeout = null;
-      let eventSource = null;
-
+      let retryTimeout, eventSource;
       function connect() {
-        eventSource = new EventSource("/state/listen");
-
+        eventSource = new EventSource("/data/listen");
         eventSource.onmessage = function(event) {
-          console.log(event);
-          const data = JSON.parse(event.data);
-          console.log("Received data:", data.state_data);
+          const payload = JSON.parse(event.data);
+          const s = payload.state_data || {};
+          playerState.isPlaying   = s.state;
+          playerState.songName    = s.song_name || "Player not active";
+          playerState.coverUrl    = s.cover;
+          playerState.artist      = s.artist;
+          playerState.duration    = s.duration;
+          playerState.progress    = s.progress;
+          playerState.durationMs  = s.duration_ms;
+          playerState.progressMs  = s.progress_ms;
+          playerState.songUrl     = s.song_url;
+          playerState.queueData   = payload.queue_data || [];
 
-          // Update the song name, cover, and playback state
-          isPlaying = data.state_data.state;
-          if (isPlaying != null) {
-            currentSong = data.state_data.song_name;
-            currentCover = data.state_data.cover;
-            artist = data.state_data.artist;
-            duration = data.state_data.duration;
-            progress = data.state_data.progress;
-            duration_ms = data.state_data.duration_ms;
-            progress_ms = data.state_data.progress_ms;
-            song_url = data.state_data.song_url;
-          } else {
-            currentSong = "Player not active";
-          }
+          // auto‑cache new songs added by this user
+          const myId = getUserId();
+          payload.queue_data.forEach(q => {
+            if (q.user_ids.includes(myId) && !myAddedSongs[q.sp_id]) {
+              myAddedSongs[q.sp_id] = {
+                track_id:       q.sp_id,
+                song_name:      q.titel,
+                song_artist:    q.artist,
+                song_cover_url: q.cover_url,
+                already_played: false,
+                user_id:        myId
+              };
+            }
+          });
 
-          const songNameElement = document.getElementById("currentTitle");
-          if (songNameElement.textContent != currentSong) {
-            songNameElement.textContent = currentSong;
-            document.getElementById("songUrl")?.setAttribute("href", song_url);
+          // update player UI...
+          const titleEl  = document.getElementById("currentTitle");
+          const urlEl    = document.getElementById("songUrl");
+          if (titleEl.textContent !== playerState.songName) {
+            titleEl.textContent = playerState.songName;
+            urlEl?.setAttribute("href", playerState.songUrl);
           }
 
           const artistNameElement = document.getElementById("currentArtist");
-          if (artistNameElement.textContent != artist) {
-            artistNameElement.textContent = artist;
+          if (artistNameElement.textContent !== playerState.artist) {
+            artistNameElement.textContent = playerState.artist;
           }
 
           const songCoverElement = document.getElementById("currentCover");
-          if (songCoverElement.textContent != currentCover) {
-            songCoverElement.src = currentCover;
+          if (songCoverElement.src !== playerState.coverUrl) {
+            songCoverElement.src = playerState.coverUrl;
           }
 
           const songProgressElement = document.getElementById("songProgress");
-          songProgressElement.max = duration_ms;
-          songProgressElement.value = progress_ms;
+          songProgressElement.max   = playerState.durationMs;
+          songProgressElement.value = playerState.progressMs;
 
           const ProgressElement = document.getElementById("progress");
           const DurationElement = document.getElementById("duration");
-          ProgressElement.textContent = progress;
-          DurationElement.textContent = duration;
+          if (ProgressElement.textContent !== playerState.progress) {
+            ProgressElement.textContent = playerState.progress;
+          }
+          if (DurationElement.textContent !== playerState.duration) {
+            DurationElement.textContent = playerState.duration;
+          }
 
           const queueBody = document.getElementById('queueBody');
           queueBody.innerHTML = '';
-          (data.queue_data || []).forEach(item => {
+          playerState.queueData.forEach(item => {
             const row = document.createElement('tr');
             row.className = 'hover:bg-base-200';
             row.innerHTML = `
@@ -175,43 +226,164 @@
             `;
             queueBody.appendChild(row);
           });
-        };
 
-        eventSource.onerror = function(error) {
-          console.error("Error with SSE stream, retrying in 1 seconds...", error);
+          // if added‑songs view is open, rebuild its list to include new items
+          const addedSection = document.getElementById('myAddedSongsSection');
+          if (hasLoadedMyAdded && !addedSection.classList.contains('hidden')) {
+            showMyAddedSongs();
+          }
+        };
+        
+        eventSource.onerror = () => {
+          clearTimeout(retryTimeout);
           eventSource.close();
-          if (retryTimeout) clearTimeout(retryTimeout);
           retryTimeout = setTimeout(connect, 1000);
         };
       }
-
       connect();
     }
 
-    // show queue section
-    document.getElementById('showQueue').addEventListener('click', () => {
+    // fetch initial and render "Meine hinzugefügten Songs"
+    async function showMyAddedSongs() {
+      const list = document.getElementById('myAddedSongsList');
+      const myId = getUserId();
+
+      if (!hasLoadedMyAdded) {
+        // show spinner
+        list.innerHTML = '<div class="flex justify-center"><span class="loading loading-spinner loading-lg"></span></div>';
+        const res  = await fetch('/data/get_added');
+        const json = await res.json();
+        const added = json.data || [];
+
+        // cache all added songs
+        added.forEach(item => {
+          myAddedSongs[item.track_id] = item;
+        });
+        hasLoadedMyAdded = true;
+      }
+
+      // sort entries by queue position (top of queue first)
+      const entries = Object.values(myAddedSongs)
+        .map(item => {
+          const q = playerState.queueData.find(qi => qi.sp_id === item.track_id);
+          return {
+            item,
+            pos: q && q.num_in_queue ? parseInt(q.num_in_queue, 10) : Infinity,
+            inQueue: q?.user_ids?.includes(myId)
+          };
+        })
+        .sort((a, b) => a.pos - b.pos);
+
+      list.innerHTML = '';
+      entries.forEach(({ item, inQueue }) => {
+        // truncate long song names
+        const maxLen = 30;
+        const name = item.song_name.length > maxLen
+          ? item.song_name.slice(0, maxLen - 3) + '...'
+          : item.song_name;
+
+        const row = document.createElement('div');
+        row.className = `flex items-center bg-base-100 p-2 rounded-lg shadow ${!inQueue ? 'opacity-50' : ''}`;
+        row.dataset.trackId = item.track_id;
+        row.innerHTML = `
+          <div class="flex items-center gap-2 flex-1 min-w-0">
+            <img src="${item.song_cover_url}" class="w-8 h-8 mask mask-squircle"/>
+            <div class="ml-2 flex-1 min-w-0">
+              <div class="font-semibold leading-tight text-xs sm:text-sm truncate">${name}</div>
+              <div class="text-[10px] sm:text-xs opacity-50 truncate">${item.song_artist}</div>
+            </div>
+          </div>
+          <div class="flex-shrink-0 flex items-center gap-4 text-xs sm:text-sm">
+            <span class="item-pos tabular-nums font-semibold"></span>
+            <span class="item-length font-semibold"></span>
+            <span class="item-till font-semibold"></span>
+          </div>
+        `;
+        list.appendChild(row);
+      });
+
+      // hide other sections, show this one
+      document.getElementById('queueSection').classList.add('hidden');
       document.getElementById('searchSection').classList.add('hidden');
+      document.getElementById('myAddedSongsSection').classList.remove('hidden');
+
+      // update dynamic fields
+      updateMyAddedSongsData();
+    }
+
+    // update queue position, length, time‑till
+    function updateMyAddedSongsData() {
+      const list = document.getElementById('myAddedSongsList');
+      const myId = getUserId();
+      Array.from(list.children).forEach(row => {
+        const tid = row.dataset.trackId;
+        const q   = playerState.queueData.find(qi => qi.sp_id === tid) || {};
+        row.querySelector('.item-pos').textContent    = q.num_in_queue  ? `#${q.num_in_queue}`    : '';
+        row.querySelector('.item-length').textContent = q.length        || '';
+        row.querySelector('.item-till').textContent   = q.time_till_song ? `- ${q.time_till_song}` : '';
+      });
+    }
+
+    // button handlers
+    document.getElementById('showMyAddedSongs').addEventListener('click', showMyAddedSongs);
+    document.getElementById('cancelMyAddedSongs').addEventListener('click', () => {
+      document.getElementById('myAddedSongsSection').classList.add('hidden');
       document.getElementById('queueSection').classList.remove('hidden');
     });
 
-    // toggle add-song section
+    // show search/add section
     document.getElementById('addToQueue').addEventListener('click', () => {
       document.getElementById('queueSection').classList.add('hidden');
+      document.getElementById('myAddedSongsSection').classList.add('hidden');
       document.getElementById('searchSection').classList.remove('hidden');
+      // focus the input
+      document.getElementById('songQuery')?.focus();
     });
+
+    // cancel button in search section
     document.getElementById('cancelAdd').addEventListener('click', () => {
       document.getElementById('searchSection').classList.add('hidden');
       document.getElementById('queueSection').classList.remove('hidden');
     });
 
-    // Start listening to the SSE stream when the page loads
-    window.onload = function() {
-        listenToStateStream();
-    };
+    // clear search input & results
+    document.getElementById('clearSearch').addEventListener('click', () => {
+      const q = document.getElementById('songQuery');
+      q.value = '';
+      document.getElementById('searchResults').innerHTML = '';
+      q.focus();
+    });
+
+  // Default to queue tab on DOM ready
+  document.addEventListener('DOMContentLoaded', () => {
+    showTab('queueSection');
+  });
+
+  // Tab switching logic
+  function showTab(tabId) {
+    ['queueSection','searchSection','myAddedSongsSection'].forEach(id => {
+        document.getElementById(id)
+                .classList.toggle('hidden', id !== tabId);
+    });
+  }
+
+  document.getElementById('showQueue')
+      .addEventListener('click', () => showTab('queueSection'));
+  document.getElementById('addToQueue')
+      .addEventListener('click', () => showTab('searchSection'));
+  document.getElementById('showMyAddedSongs')
+      .addEventListener('click', () => showTab('myAddedSongsSection'));
+  document.getElementById('cancelAdd')
+      .addEventListener('click', () => showTab('queueSection'));
+  document.getElementById('cancelMyAddedSongs')
+      .addEventListener('click', () => showTab('queueSection'));
+
+  // ALWAYS start the SSE stream immediately
+  listenToStateStream();
   </script>
 
   <!-- Footer -->
-  <footer class="p-2 bg-base-100/50 backdrop-blur-sm text-center text-xs text-gray-400">
+  <footer class="py-6 px-4 bg-base-100/50 backdrop-blur-sm text-center text-xs sm:text-sm text-gray-400">
     <a href="https://github.com/LuisSchuimer/MuQ" target="_blank" class="font-medium hover:underline">
       GitHub Repo
     </a>

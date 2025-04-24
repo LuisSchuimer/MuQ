@@ -7,6 +7,7 @@
 #   all-features: false
 #   with-sources: false
 #   generate-hashes: false
+#   universal: false
 
 -e file:.
 annotated-types==0.7.0
@@ -24,8 +25,6 @@ charset-normalizer==3.4.1
     # via requests
 click==8.1.8
     # via flask
-colorama==0.4.6
-    # via click
 dotenv==0.9.9
     # via muq
 flask==3.1.0
@@ -47,6 +46,8 @@ markupsafe==3.0.2
     # via werkzeug
 niquests==3.14.0
     # via pytailwindcss-extra
+peewee==3.17.9
+    # via muq
 pydantic==2.11.3
     # via muq
 pydantic-core==2.33.1

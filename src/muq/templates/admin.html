@@ -127,7 +127,7 @@
 
             // Function to listen to SSE stream for state updates
             function listenToStateStream() {
-                const eventSource = new EventSource("/state/listen");
+                const eventSource = new EventSource("/data/listen");
 
                 eventSource.onmessage = function(event) {
                     console.log(event);
