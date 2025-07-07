@@ -13,7 +13,7 @@ from muq.backend.database import Database
 
 client_id = CONFIG.CLIENT_ID
 client_secret = CONFIG.CLIENT_SECRET
-redirect_uri = "http://localhost:8000/callback"
+redirect_uri = "http://127.0.0.1:8000/callback"
 
 db = Database()
 
