@@ -7,7 +7,6 @@
 #   all-features: false
 #   with-sources: false
 #   generate-hashes: false
-#   universal: false
 
 -e file:.
 annotated-types==0.7.0
@@ -25,6 +24,9 @@ charset-normalizer==3.4.1
     # via requests
 click==8.1.8
     # via flask
+colorama==0.4.6
+    # via click
+    # via tqdm
 dotenv==0.9.9
     # via muq
 flask==3.1.0
@@ -48,11 +50,13 @@ niquests==3.14.0
     # via pytailwindcss-extra
 peewee==3.17.9
     # via muq
+platformdirs==4.3.8
+    # via pytailwindcss-extra
 pydantic==2.11.3
     # via muq
 pydantic-core==2.33.1
     # via pydantic
-pytailwindcss-extra==0.1.1
+pytailwindcss-extra==0.2.1
     # via muq
 python-dotenv==1.1.0
     # via dotenv
@@ -62,6 +66,8 @@ requests==2.32.3
     # via muq
 soupsieve==2.6
     # via beautifulsoup4
+tqdm==4.67.1
+    # via pytailwindcss-extra
 typing-extensions==4.13.1
     # via beautifulsoup4
     # via pydantic

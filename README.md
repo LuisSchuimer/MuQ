@@ -30,27 +30,27 @@
 
 
 ## Overview
-MuQ is a web-app to make events, festivals, parties etc. more interactive. With this app, users can easily add or vote for songs that should be played next. Additionally, users can keep track of their wished songs and can monitor, when it will be played next.
+MuQ is a web-app to make events, festivals, parties etc. more interactive. With this app, users can easily add or vote for songs that should be played next. Additionally, users can keep track of their wished songs and can monitor, when it will be played.
 
 ### No login required
-With MuQ, you can use all features without needing to set a password or login with personal data. When a new device connects with the MuQ server, the server gives the device a id, so that songs that are requested can be remembered.
+With MuQ, you can use all features without needing to set a password or login with personal data. When a new device connects with the MuQ server the server gives the device a id, so that songs that are requested can be remembered.
 
 ### Using Spotify
-Spotify is the biggest music streaming service and has millions songs and MuQ takes full adventage of the possibilities given by the Spotify API. 
+Spotify is the biggest music streaming service and has millions of songs and MuQ takes full adventage of the possibilities given by the Spotify API. 
 
-You only need to have a spotify premium account and you can connect your account with MuQ. You only need 2 things to use your account:
+You only need to have a spotify premium account and you can connect it with MuQ. You only need 2 things to use your account:
 - A client id
 - A client secret
 
-Where you can request them ([Spotify Developer](#spotify-developers)) and how to tell MuQ ([.env file](#env-file)) are being discussed later.
+Where you can request them ([Spotify Developer](#add-a-new-app-on-spotify)) and how to tell MuQ ([.env file](#env-file)) are being discussed later.
 
 ## The idea
-The idea started on a night with friends when we had a speaker to hear some music while talking. We had a Spotify Jam open, so that everyone at the meetup can put in some music they want to hear. But there was one problem: When you missclick on a song it directly plays. This happened pretty often. Additionally, there where too many settings, that could be changed by accident. For the most part they wheren't even necessary for the most use cases.
+The idea started on a night with friends, when we had a speaker to hear some music while talking. We had a Spotify Jam open, so that everyone at the meetup can put in some music they want to hear. But there was one problem: When you missclick on a song it directly plays. This happened pretty often. Additionally, there where too many settings, that could be changed by accident. For the most part they wheren't even necessary.
 
 I thought about a way to have the necessary functionality of putting a song into a queue but limit the possible damage someone can do, by missclicking on a song or button. 
 
 ### Why not use this system for bigger events?
-At many different café's in germany, I found a system where you can request songs. I tried it ones and I directly notised, that you needed an account to use this software. This bothered me.
+At many different café's in germany, I found a system where you can request songs. I tried it once and I notised, that you needed an account to use this software. This bothered me.
 
 When I had the idea for MuQ, I remembered that situation. I found the idea of requesting a song to be played at an event interesting. And I am not the only one: Why do people request songs at the club? It is the same principle: **Inclusion** 
 

@@ -13,7 +13,6 @@ from dotenv import dotenv_values
 from muq.backend.song_validation import fetch_lyrics
 from uuid import uuid4
 
-auth_code: str = ""
 auth_link = authenticate()
 env = dotenv_values()
 
@@ -36,32 +35,31 @@ def main():
 
 @app.route("/pause", methods=["POST"])
 def pause():
-    response = send_pause(auth_code)
+    response = send_pause()
     if response[0]: return "", HTTPStatus.OK
     else: return "", HTTPStatus.BAD_REQUEST
 
 @app.route("/play", methods=["POST"])
 def play():
-    response = send_play(auth_code)
+    response = send_play()
     if response[0]: return "", HTTPStatus.OK
     else: return "", HTTPStatus.BAD_REQUEST
 
 @app.route("/test")
 def test():
-    res = get_queue(auth_code)
+    res = get_queue()
     return res, HTTPStatus.OK
 
 @app.route("/admin", methods=["GET"])
 def admin():
-    return render_template("admin.html", current_state=get_state(auth_code))
+    return render_template("admin.html", current_state=get_state())
 
 @app.route("/search")
 def make_search():
     query = request.args.get("query")
-    search(auth_code, query)
     return render_template(
         "components/song_card.html",
-        results=search(auth_code, query)
+        results=search(query)
     )
 
 @app.route("/add/queue", methods=["POST"])
@@ -76,7 +74,7 @@ def add_song_to_queue():
     
     if not song_uri or not song_name or not song_artist or not song_cover_url:
         return "", HTTPStatus.BAD_REQUEST
-    res = add_to_queue(auth_code, song_uri, user_id, song_name, song_artist, song_cover_url)
+    res = add_to_queue(song_uri, user_id, song_name, song_artist, song_cover_url)
     if res[0]: return "", HTTPStatus.OK
     else: return "", HTTPStatus.CONFLICT
 
@@ -99,9 +97,11 @@ def listen():
     def stream():
         last_send_data: str = ""
         while True:
+            state_data = get_state(); queue_data = get_queue();
+            if not state_data: continue
             new_data = dumps({
-                "state_data": get_state(auth_code),
-                "queue_data": get_queue(auth_code)
+                "state_data": state_data,
+                "queue_data": queue_data
             })
             if new_data != last_send_data:
                 last_send_data = new_data; yield _format_sse(new_data)
@@ -127,8 +127,7 @@ def get_added():
 
 @app.route("/callback")
 def auth_callback():
-    global auth_code
-    auth_code = get_access_token(request.args.get("code"))
+    request_access_token(request.args.get("code"))
     return "", HTTPStatus.OK
 
 
