@@ -30,6 +30,25 @@
     </div>
   </div>
 
+  <!-- Voting SECTION -->
+  <div id="votingSection" class="hidden p-6 flex-1 overflow-y-auto bg-base-200 rounded-xl shadow-lg border border-base-300">
+    <h2 class="text-lg font-semibold mb-4">Voting‑Liste</h2>
+    <div class="overflow-x-auto w-full">
+      <table class="table table-zebra w-full text-sm">
+        <thead>
+          <tr>
+            <th class="w-12"></th>
+            <th>Name</th>
+            <th class="w-16 text-right">Votes</th>
+            <th class="w-24 text-right">Aktion</th>
+          </tr>
+        </thead>
+        <tbody id="votingBody">
+        </tbody>
+      </table>
+    </div>
+  </div>
+
   <!-- SEARCH/ADD SONG SECTION -->
   <div id="searchSection"
        class="hidden p-6 flex-1 overflow-y-auto bg-base-200 rounded-xl shadow-lg border border-base-300 flex flex-col">
@@ -78,6 +97,7 @@
   
   <div class="p-4 flex-none bg-base-100 border-t border-base-300 shadow-xl sticky bottom-0 flex gap-2 justify-center">
     <button id="showQueue"        class="btn btn-xs sm:btn-sm shadow-md">Warteschlange</button>
+    <button id="showVoting"       class="btn btn-xs sm:btn-sm shadow-md">Voting‑Liste</button>
     <button id="addToQueue"       class="btn btn-xs sm:btn-sm shadow-md">Hinzufügen</button>
     <button id="showMyAddedSongs" class="btn btn-xs sm:btn-sm shadow-md">Meine Songs</button>
   </div>
@@ -115,8 +135,10 @@
       durationMs: 0,
       progressMs: 0,
       songUrl: '',
-      queueData: []
+      queueData: [],
+      votingEnabled: false
     };
+    let didSelectDefaultTab = false;
 
     // store all songs this user ever added
     const myAddedSongs = {};
@@ -149,21 +171,13 @@
           playerState.progressMs  = s.progress_ms;
           playerState.songUrl     = s.song_url;
           playerState.queueData   = payload.queue_data || [];
+          playerState.votingEnabled = !!payload.voting_enabled;
 
-          // auto‑cache new songs added by this user
-          const myId = getUserId();
-          payload.queue_data.forEach(q => {
-            if (q.user_ids.includes(myId) && !myAddedSongs[q.sp_id]) {
-              myAddedSongs[q.sp_id] = {
-                track_id:       q.sp_id,
-                song_name:      q.titel,
-                song_artist:    q.artist,
-                song_cover_url: q.cover_url,
-                already_played: false,
-                user_id:        myId
-              };
-            }
-          });
+          // choose default tab once based on voting flag
+          if (!didSelectDefaultTab) {
+            showTab(playerState.votingEnabled ? 'votingSection' : 'queueSection');
+            didSelectDefaultTab = true;
+          }
 
           // update player UI...
           const titleEl  = document.getElementById("currentTitle");
@@ -196,38 +210,78 @@
             DurationElement.textContent = playerState.duration;
           }
 
-          const queueBody = document.getElementById('queueBody');
+          // render table depending on mode
+          const queueBody  = document.getElementById('queueBody');
+          const votingBody = document.getElementById('votingBody');
           queueBody.innerHTML = '';
-          playerState.queueData.forEach(item => {
-            const row = document.createElement('tr');
-            row.className = 'hover:bg-base-200';
-            row.innerHTML = `
-              <th class="relative w-12">
-                ${item.cover_url ? `
-                <img src="${item.cover_url}" alt="" class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-8 h-8 object-cover blur-none sm:hidden rounded-md opacity-50" />` : ''}
-                <div class="relative text-base sm:text-lg font-thin opacity-100 tabular-nums">${item.num_in_queue}</div>
-              </th>
-              <td>
-                <div class="flex items-center gap-3">
-                  ${item.cover_url ? `
-                  <div class="avatar hidden sm:block">
-                    <div class="mask mask-squircle w-10 h-10 sm:w-12 sm:h-12">
-                      <img src="${item.cover_url}" alt="Album cover" />
-                    </div>
-                  </div>` : ''}
-                  <div>
-                    <div class="font-semibold leading-tight text-xs sm:text-sm">${item.titel}</div>
-                    <div class="text-[10px] sm:text-xs opacity-50">${item.artist}</div>
-                  </div>
-                </div>
-              </td>
-              <td class="text-right font-semibold">${item.length}</td>
-              <td class="text-right font-semibold">-${item.time_till_song}</td>
-            `;
-            queueBody.appendChild(row);
-          });
+          votingBody.innerHTML = '';
 
-          // if added‑songs view is open, rebuild its list to include new items
+          if (!playerState.votingEnabled) {
+            // normal queue rendering
+            playerState.queueData.forEach(item => {
+              const row = document.createElement('tr');
+              row.className = 'hover:bg-base-200';
+              row.innerHTML = `
+                <th class="relative w-12">
+                  ${item.cover_url ? `
+                  <img src="${item.cover_url}" alt="" class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-8 h-8 object-cover blur-none sm:hidden rounded-md opacity-50" />` : ''}
+                  <div class="relative text-base sm:text-lg font-thin opacity-100 tabular-nums">${item.num_in_queue}</div>
+                </th>
+                <td>
+                  <div class="flex items-center gap-3">
+                    ${item.cover_url ? `
+                    <div class="avatar hidden sm:block">
+                      <div class="mask mask-squircle w-10 h-10 sm:w-12 sm:h-12">
+                        <img src="${item.cover_url}" alt="Album cover" />
+                      </div>
+                    </div>` : ''}
+                    <div>
+                      <div class="font-semibold leading-tight text-xs sm:text-sm">${item.titel}</div>
+                      <div class="text-[10px] sm:text-xs opacity-50">${item.artist}</div>
+                    </div>
+                  </div>
+                </td>
+                <td class="text-right font-semibold">${item.length ?? ''}</td>
+                <td class="text-right font-semibold">-${item.time_till_song ?? ''}</td>
+              `;
+              queueBody.appendChild(row);
+            });
+          } else {
+            // voting rendering
+            playerState.queueData.forEach(item => {
+              const votes = item.votes ?? item.vote_count ?? 0; // flexible field name
+              const row = document.createElement('tr');
+              row.className = 'hover:bg-base-200';
+              row.innerHTML = `
+                <th class="relative w-12">
+                  ${item.cover_url ? `
+                  <img src="${item.cover_url}" alt="" class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-8 h-8 object-cover blur-none sm:hidden rounded-md opacity-50" />` : ''}
+                  <div class="relative text-base sm:text-lg font-thin opacity-100 tabular-nums">${item.num_in_queue ?? ''}</div>
+                </th>
+                <td>
+                  <div class="flex items-center gap-3">
+                    ${item.cover_url ? `
+                    <div class="avatar hidden sm:block">
+                      <div class="mask mask-squircle w-10 h-10 sm:w-12 sm:h-12">
+                        <img src="${item.cover_url}" alt="Album cover" />
+                      </div>
+                    </div>` : ''}
+                    <div>
+                      <div class="font-semibold leading-tight text-xs sm:text-sm">${item.titel}</div>
+                      <div class="text-[10px] sm:text-xs opacity-50">${item.artist}</div>
+                    </div>
+                  </div>
+                </td>
+                <td class="text-right font-semibold tabular-nums">${votes}</td>
+                <td class="text-right">
+                  <button class="btn btn-xs btn-primary" onclick="voteForTrack('${item.sp_id}')">Wählen</button>
+                </td>
+              `;
+              votingBody.appendChild(row);
+            });
+          }
+
+          // if added‑songs view is open, rebuild its list
           const addedSection = document.getElementById('myAddedSongsSection');
           if (hasLoadedMyAdded && !addedSection.classList.contains('hidden')) {
             showMyAddedSongs();
@@ -241,6 +295,21 @@
         };
       }
       connect();
+    }
+
+    async function voteForTrack(trackId) {
+      try {
+        const res = await fetch('/add/vote', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ track_id: trackId })
+        });
+        if (!res.ok) {
+          console.error('Vote failed', res.status);
+        }
+      } catch (e) {
+        console.error('Vote error', e);
+      }
     }
 
     // fetch initial and render "Meine hinzugefügten Songs"
@@ -361,14 +430,16 @@
 
   // Tab switching logic
   function showTab(tabId) {
-    ['queueSection','searchSection','myAddedSongsSection'].forEach(id => {
-        document.getElementById(id)
-                .classList.toggle('hidden', id !== tabId);
+    ['queueSection','votingSection','searchSection','myAddedSongsSection'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.classList.toggle('hidden', id !== tabId);
     });
   }
 
   document.getElementById('showQueue')
       .addEventListener('click', () => showTab('queueSection'));
+  document.getElementById('showVoting')
+      .addEventListener('click', () => showTab('votingSection'));
   document.getElementById('addToQueue')
       .addEventListener('click', () => showTab('searchSection'));
   document.getElementById('showMyAddedSongs')

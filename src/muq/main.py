@@ -7,18 +7,18 @@ from flask import (
     make_response
 )
 from json import dumps
+from muq.config import CONFIG
 from muq.backend.main import *
 from http import HTTPStatus
-from dotenv import dotenv_values
 from muq.backend.song_validation import fetch_lyrics
 from uuid import uuid4
 
 auth_link = authenticate()
-env = dotenv_values()
+voting_enabled = CONFIG.ENABLE_VOTING
 
 print(f"You need to authenticate your Spotify: {auth_link}")
 
-SERVER_PASS = env.get("SERVER_PASS")
+SERVER_PASS = CONFIG.SERVER_PASS
 
 app = Flask(__name__)
 
@@ -97,9 +97,13 @@ def listen():
     def stream():
         last_send_data: str = ""
         while True:
-            state_data = get_state(); queue_data = get_queue();
+            state_data = get_state()
+            if voting_enabled: queue_data = get_voting_list()
+            else: queue_data = get_queue()
+            
             if not state_data: continue
             new_data = dumps({
+                "voting_enabled": voting_enabled,
                 "state_data": state_data,
                 "queue_data": queue_data
             })

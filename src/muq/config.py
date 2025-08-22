@@ -7,7 +7,8 @@ from pydantic import BaseModel, ValidationError
 class Config(BaseModel):
     CLIENT_ID: str
     CLIENT_SECRET: str
-    SERVER_PASS: Optional[str] = None    
+    SERVER_PASS: Optional[str] = None
+    ENABLE_VOTING: bool = False
 
 
 env = dotenv_values()

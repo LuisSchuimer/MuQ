@@ -1,6 +1,11 @@
 import base64
 import requests
 from muq.config import CONFIG
+from muq.backend.voting_system import (
+    get_list_by_votes,
+    get_most_voted_song,
+    append_song
+)
 from typing import Tuple
 from json import loads
 from datetime import datetime
@@ -14,6 +19,8 @@ from muq.backend.database import Database
 client_id = CONFIG.CLIENT_ID
 client_secret = CONFIG.CLIENT_SECRET
 redirect_uri = "http://127.0.0.1:8000/callback"
+
+VOTING = CONFIG.ENABLE_VOTING
 
 auth_code: str = ""
 auth_token: str = ""
@@ -51,7 +58,7 @@ def get_access_token_from_response(response: requests.Response):
     else:
         print("Failed to obtain access token:", response.text)
         return None
-    
+
 def response_handler(response: requests.Response):
     match response.status_code:
         case 200:
@@ -86,7 +93,7 @@ def response_handler(response: requests.Response):
                 error=None
             )
 
-def _format_time(milliseconds: int, only_minutes: bool = False) -> str | int:
+def _format_time(milliseconds: int, only_minutes: bool = False) -> str:
     """
     Convert milliseconds to 'M:SS' format, or return minutes if only_minutes=True.
     """
@@ -94,7 +101,7 @@ def _format_time(milliseconds: int, only_minutes: bool = False) -> str | int:
     minutes = total_sec // 60
     seconds = total_sec % 60
     if only_minutes:
-        return minutes
+        return str(minutes)
     return f"{minutes}:{seconds:02d}"
 
 def _get_artists(data: any) -> str:
@@ -118,7 +125,7 @@ def authenticate() -> str:
     authorization_url = requests.Request("GET", base_url, params=params).prepare().url
 
     return authorization_url
-    
+
 def request_access_token(authorization_code: str) -> str | None:
     global auth_code, auth_token, refresh_token
     auth_code = authorization_code
@@ -138,7 +145,6 @@ def request_access_token(authorization_code: str) -> str | None:
 
     get_access_token_from_response(requests.post(url, data=payload, headers=headers))
 
-
 def request_refreshed_access_token():
     url = "https://accounts.spotify.com/api/token"
     payload = {
@@ -156,7 +162,6 @@ def request_refreshed_access_token():
 
     get_access_token_from_response(requests.post(url, data=payload, headers=headers))
 
-
 def send_pause() -> Tuple[bool, str]:
     request_refreshed_access_token()
     url = "https://api.spotify.com/v1/me/player/pause"
@@ -170,7 +175,6 @@ def send_pause() -> Tuple[bool, str]:
     if not response.success and response.fix: 
         response.fix_error(); return False
     elif response.success: return True
-    
 
 def send_play() -> Tuple[bool, str]:
     url = "https://api.spotify.com/v1/me/player/play"
@@ -253,6 +257,25 @@ def get_queue() -> list[dict]:
         queue = new_queue
         queue_time = current_time
     return queue
+
+def get_voting_list() -> list[dict]:
+    new_voting_list: list[dict] = []
+    voting_list = get_list_by_votes()
+    for count, song in enumerate(voting_list):
+        if count + 1 < 10: num_in_voting = f"0{count + 1}"
+        else: num_in_voting = count + 1
+        
+        new_voting_list.append({
+            "titel": song.name,
+            "artist": song.artist,
+            "cover_url": song.cover_url,
+            "length": _format_time(song.duration),
+            "num_in_voting": num_in_voting,
+            "sp_id": song.uri,
+            "votes": song.votes
+        })
+    
+    return new_voting_list
 
 def search(title: str) -> list[dict]:
     url = f"https://api.spotify.com/v1/search?q={title}&type=track&market=DE&limit=10&offset=0"
